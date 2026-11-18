@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Waste Sorting Helper · Team 11</title>
+<meta name="description" content="Same item, two cities, two different bins. A bilingual waste-sorting helper for Shanghai and Hong Kong where sourced local rules decide. AILT9019 Team 11.">
+<style>
+:root{
+  --bg:#f4f3ee; --surface:#ffffff; --surface2:#ecebe5; --ink:#191d1b; --ink2:#454c48; --muted:#737a76; --line:#dedcd4;
+  --accent:#1f6b4a; --accent-ink:#fff; --accent-soft:#e1eee6;
+  --ask:#9a5a0c; --ask-soft:#fbefdc; --stop:#a1352d; --stop-soft:#f8e4e1;
+  --exist:#8a908c; --dim:.22;
+  --term:#141a17; --term-ink:#d6e3dc; --term-dim:#7f9a8d;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#111412; --surface:#191d1b; --surface2:#222724; --ink:#e9ece9; --ink2:#c0c8c3; --muted:#8f9a94; --line:#2b322e;
+    --accent:#72c196; --accent-ink:#0d1a13; --accent-soft:#1b2b22;
+    --ask:#e7ad5f; --ask-soft:#2b2316; --stop:#ee8c82; --stop-soft:#2d1c1a;
+    --exist:#7c8580; --dim:.3; --term:#0b0f0d;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111412; --surface:#191d1b; --surface2:#222724; --ink:#e9ece9; --ink2:#c0c8c3; --muted:#8f9a94; --line:#2b322e;
+  --accent:#72c196; --accent-ink:#0d1a13; --accent-soft:#1b2b22;
+  --ask:#e7ad5f; --ask-soft:#2b2316; --stop:#ee8c82; --stop-soft:#2d1c1a;
+  --exist:#7c8580; --dim:.3; --term:#0b0f0d;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:60px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,"PingFang SC","PingFang TC","Microsoft YaHei","Microsoft JhengHei","Noto Sans CJK SC","Noto Sans CJK TC",sans-serif}
+a{color:var(--accent)}
+button{font:inherit;color:inherit}
+code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.9em}
+.wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* top bar */
+.top{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:20px;height:52px}
+.brand{display:flex;align-items:center;gap:8px;font-weight:700;white-space:nowrap}
+.brand .dots{display:flex;gap:3px}
+.brand .dots i{width:7px;height:16px;border-radius:2px}
+.top nav{display:flex;gap:18px;overflow-x:auto;font-size:14px;white-space:nowrap;margin-left:auto}
+.top nav a{color:var(--muted);text-decoration:none}
+.top nav a:hover{color:var(--ink)}
+
+/* hero */
+.hero{padding:40px 0 8px;text-align:center}
+.hero h1{font-size:clamp(30px,5.4vw,52px);line-height:1.05;margin:0;letter-spacing:-.02em}
+.hero h1 .sh,.hero h1 .hk{text-decoration:underline;text-decoration-thickness:6px;text-underline-offset:6px}
+.hero h1 .sh{text-decoration-color:#2462a3}.hero h1 .hk{text-decoration-color:#a06a45}
+.hero .sub{margin:12px auto 0;color:var(--muted);font-size:17px}
+.hero .sub b{color:var(--ink)}
+.links{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin:20px 0 0}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 15px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);text-decoration:none;font-weight:600;font-size:14px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn[aria-disabled="true"]{opacity:.5;pointer-events:none}
+.btn svg.i{width:16px;height:16px}
+
+/* explorer */
+.explorer{margin:28px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:0 1px 0 var(--line)}
+.picker{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 12px;scrollbar-width:thin}
+.chip{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:92px;padding:12px 8px 10px;border-radius:14px;border:1px solid var(--line);background:var(--bg);cursor:pointer;font-size:13px;line-height:1.2;text-align:center;transition:transform .15s,border-color .15s}
+.chip:hover{transform:translateY(-2px)}
+.chip[aria-pressed="true"]{border-color:var(--ink);background:var(--surface);box-shadow:0 0 0 1px var(--ink) inset}
+.chip svg.i{width:28px;height:28px}
+.chip.mat{border-style:dashed}
+.cities{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.city{border-radius:16px;background:var(--bg);padding:16px 16px 14px;min-width:0}
+.city h3{display:flex;align-items:baseline;justify-content:space-between;margin:0 0 14px;font-size:15px}
+.city h3 span{font-weight:400;color:var(--muted);font-size:12px}
+.bins{display:flex;gap:8px;align-items:flex-end;height:96px}
+.bin{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;transition:opacity .25s,transform .25s;min-width:0}
+.bin .can{position:relative;width:100%;max-width:58px;height:54px;border-radius:4px 4px 8px 8px;background:var(--c)}
+.bin .can::before{content:"";position:absolute;left:-2px;right:-2px;top:-9px;height:7px;border-radius:3px;background:var(--c);filter:brightness(1.15)}
+.bin .can::after{content:"";position:absolute;left:30%;right:30%;top:16px;height:3px;border-radius:2px;background:rgba(255,255,255,.45)}
+.bin.dark .can{box-shadow:0 0 0 1px var(--line)}
+.bin small{font-size:11px;color:var(--ink2);text-align:center;line-height:1.15;height:26px;overflow:hidden}
+.bins.has-hit .bin{opacity:var(--dim)}
+.bins.has-hit .bin.hit{opacity:1;transform:translateY(-8px)}
+.bins.none .bin{opacity:var(--dim)}
+.verdict{margin-top:12px;border-radius:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--line);min-height:104px}
+.verdict .head{display:flex;align-items:center;gap:8px;font-weight:700}
+.verdict .head i{width:12px;height:12px;border-radius:3px;background:var(--c);flex:none}
+.verdict .prep{display:flex;gap:8px;margin-top:8px;font-size:14px;color:var(--ink2)}
+.verdict .prep svg.i{width:18px;height:18px;color:var(--accent);margin-top:1px}
+.verdict .src{display:flex;gap:6px;align-items:center;margin-top:8px;font-size:12px;color:var(--muted)}
+.verdict .src svg.i{width:14px;height:14px}
+.verdict.ask{background:var(--ask-soft);border-color:transparent;color:var(--ask)}
+.verdict.stop{background:var(--stop-soft);border-color:transparent;color:var(--stop)}
+.verdict .msg{font-size:14px;margin-top:6px;color:var(--ink2)}
+.opts{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.opt{border:1px solid currentColor;background:transparent;border-radius:999px;padding:4px 11px;font-size:13px;cursor:pointer;color:var(--ask)}
+.opt[aria-pressed="true"]{background:var(--ask);color:var(--surface)}
+.exfoot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:12px;font-size:12px;color:var(--muted)}
+.key{display:flex;gap:14px;flex-wrap:wrap}
+.key span{display:inline-flex;align-items:center;gap:6px}
+.key i{width:10px;height:10px;border-radius:3px}
+
+/* sections */
+section{padding:56px 0 8px}
+.sh2{display:flex;align-items:center;gap:12px;margin:0 0 20px}
+.sh2 .n{font:600 12px/1 ui-monospace,Consolas,monospace;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:5px 8px}
+h2{font-size:26px;margin:0;letter-spacing:-.01em}
+
+/* pipeline */
+.pipe{display:flex;align-items:stretch;gap:0}
+.stage{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;position:relative;padding:0 6px}
+.stage .disc{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:var(--surface);border:2px solid var(--accent);color:var(--accent)}
+.stage.ex .disc{border-color:var(--exist);color:var(--exist);border-style:dashed}
+.stage .disc svg.i{width:28px;height:28px}
+.stage>div{display:flex;flex-direction:column;align-items:center;gap:2px}
+.stage b{font-size:14px}
+.stage span{font-size:12px;color:var(--muted);max-width:150px}
+.stage:not(:last-child)::after{content:"";position:absolute;top:32px;left:calc(50% + 40px);right:calc(-50% + 40px);border-top:2px dotted var(--line)}
+.forks{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:22px}
+.fork{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:6px 14px;font-size:13px;font-weight:600}
+.fork.ask{background:var(--ask-soft);color:var(--ask)}
+.fork.stop{background:var(--stop-soft);color:var(--stop)}
+.fork svg.i{width:16px;height:16px}
+.plegend{display:flex;justify-content:center;gap:18px;margin-top:16px;font-size:12px;color:var(--muted)}
+.plegend span{display:inline-flex;align-items:center;gap:6px}
+.plegend i{width:14px;height:14px;border-radius:50%;border:2px solid var(--accent)}
+.plegend i.e{border-color:var(--exist);border-style:dashed}
+
+/* run viewer */
+.viewer{display:grid;grid-template-columns:240px 1fr;gap:16px;align-items:start}
+.steps{display:flex;flex-direction:column;gap:6px}
+.stepbtn{display:flex;gap:10px;align-items:center;text-align:left;padding:10px 12px;border-radius:12px;border:1px solid transparent;background:transparent;cursor:pointer;font-size:14px}
+.stepbtn .k{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--surface2);font-size:12px;font-weight:700;flex:none}
+.stepbtn[aria-selected="true"]{background:var(--surface);border-color:var(--line)}
+.stepbtn[aria-selected="true"] .k{background:var(--accent);color:var(--accent-ink)}
+.stepbtn em{display:block;font-style:normal;font-size:12px;color:var(--muted)}
+.frame{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.frame .bar{display:flex;align-items:center;gap:6px;padding:9px 12px;border-bottom:1px solid var(--line);background:var(--surface2)}
+.frame .bar i{width:9px;height:9px;border-radius:50%;background:var(--line)}
+.frame .bar code{margin-left:10px;font-size:12px;color:var(--muted)}
+.frame img{display:block;width:100%;height:auto}
+.proof{font-size:12px;color:var(--muted);margin-top:8px}
+
+/* run it */
+.runs{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;align-items:stretch}
+.runs>*{min-width:0}
+.term{background:var(--term);color:var(--term-ink);border-radius:14px;overflow:hidden}
+.term .bar{display:flex;gap:6px;padding:10px 12px;background:rgba(255,255,255,.05)}
+.term .bar i{width:9px;height:9px;border-radius:50%;background:#34413b}
+.term pre{margin:0;padding:12px 16px 16px;white-space:pre-wrap;word-break:break-all;font-size:13.5px;line-height:1.75}
+.term .p{color:#72c196}.term .c{color:var(--term-dim)}.term .ok{color:#72c196;font-weight:700}
+.reqs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.req{display:flex;flex-direction:column;justify-content:center;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
+.req svg.i{color:var(--accent)}
+.req b{font-size:15px}
+.req span{font-size:12px;color:var(--muted)}
+.req a{font-size:13px;word-break:break-all}
+
+/* results */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+.stat .v{font-size:34px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.stat .v small{font-size:16px;color:var(--muted);font-weight:600}
+.stat .l{font-size:13px;color:var(--ink2);margin-top:8px}
+.dotsrow{display:flex;flex-wrap:wrap;gap:3px;margin-top:10px}
+.dotsrow i{width:7px;height:7px;border-radius:2px;background:var(--accent)}
+.dotsrow i.x{background:var(--line)}
+.recall{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.rc{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+.rc .t{font-size:13px;color:var(--ink2);margin-bottom:10px}
+.grid20{display:grid;grid-template-columns:repeat(10,1fr);gap:4px}
+.grid20 i{aspect-ratio:1;border-radius:4px;background:var(--accent)}
+.grid20 i.x{background:var(--surface2);box-shadow:inset 0 0 0 1px var(--line)}
+.rc .v{font-size:22px;font-weight:700;margin-top:10px;font-variant-numeric:tabular-nums}
+.rc .v small{font-size:13px;color:var(--muted);font-weight:400;margin-left:6px}
+.evi{font-size:12px;color:var(--muted);margin-top:10px}
+
+/* failure */
+.fail{display:grid;grid-template-columns:1.2fr 1fr;gap:16px;align-items:start}
+.fail>*{min-width:0}
+.chat{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.bubble{max-width:88%;border-radius:14px;padding:10px 13px;font-size:14px}
+.bubble.u{align-self:flex-end;background:var(--surface2);border-bottom-right-radius:4px}
+.bubble.u small{display:block;font-size:11px;color:var(--muted)}
+.bubble.a{align-self:flex-start;background:var(--stop-soft);color:var(--stop);border-bottom-left-radius:4px}
+.diag{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:13px;border-top:1px dashed var(--line);padding-top:12px;margin-top:4px}
+.diag b{color:var(--muted);font-weight:600}
+.lims{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.lim{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--ink2)}
+.lim svg.i{color:var(--muted)}
+.lim b{font-size:20px;color:var(--ink);line-height:1}
+
+/* team */
+.team{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.mem{display:flex;flex-direction:column;align-items:center;gap:8px;width:120px;font-size:14px;text-align:center}
+.mem i{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:700;color:#fff;background:var(--c)}
+footer{margin-top:56px;padding:22px 0 40px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);text-align:center}
+
+@media (max-width:860px){
+  .cities,.runs,.fail,.recall{grid-template-columns:1fr}
+  .viewer{grid-template-columns:1fr}
+  .steps{flex-direction:row;overflow-x:auto}
+  .stepbtn{flex:none}
+  .stepbtn em{display:none}
+  .stats{grid-template-columns:1fr 1fr}
+  .pipe{flex-direction:column;gap:18px}
+  .stage{flex-direction:row;text-align:left;gap:14px}
+  .stage .disc{width:52px;height:52px}
+  .stage>div{align-items:flex-start}
+  .stage span{max-width:none}
+  .stage:not(:last-child)::after{top:56px;left:26px;right:auto;bottom:-16px;border-top:0;border-left:2px dotted var(--line)}
+  .top nav{display:none}
+}
+@media (max-width:420px){
+  .bins{gap:5px}
+  .bin small{font-size:10px}
+  .lims,.reqs{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="bottle" viewBox="0 0 24 24"><path d="M10 2h4v3l2 3v12a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2V8l2-3z"/><path d="M8 12h8"/></symbol>
+    <symbol id="paper" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h6M7 16h10"/></symbol>
+    <symbol id="box" viewBox="0 0 24 24"><path d="M3 7l9-4 9 4v10l-9 4-9-4z"/><path d="M3 7l9 4 9-4M12 11v10"/></symbol>
+    <symbol id="battery" viewBox="0 0 24 24"><rect x="7" y="4" width="10" height="17" rx="2"/><path d="M10 2h4M12 9v5M10 11.5h4"/></symbol>
+    <symbol id="tube" viewBox="0 0 24 24"><rect x="2" y="9" width="20" height="6" rx="3"/><path d="M5 9v6M19 9v6"/></symbol>
+    <symbol id="carton" viewBox="0 0 24 24"><path d="M7 8l2-5h6l2 5v12a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1z"/><path d="M7 8h10M12 3v5"/></symbol>
+    <symbol id="foam" viewBox="0 0 24 24"><path d="M3 9h18l-2 9H5z"/><path d="M8 9v9M16 9v9"/></symbol>
+    <symbol id="peel" viewBox="0 0 24 24"><path d="M12 7c-4 0-7 3-7 7s3 7 7 7 7-3 7-7-3-7-7-7z"/><path d="M12 7c0-2 1-4 3-5"/></symbol>
+    <symbol id="material" viewBox="0 0 24 24"><path d="M12 3l3 5h-6zM5 20l-2-4 3-5M19 20l2-4-3-5M8 20h8"/></symbol>
+    <symbol id="hand" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></symbol>
+    <symbol id="link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 6 0l3-3a4 4 0 0 0-6-6l-1 1"/><path d="M14 10a4 4 0 0 0-6 0l-3 3a4 4 0 0 0 6 6l1-1"/></symbol>
+    <symbol id="pin" viewBox="0 0 24 24"><path d="M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+    <symbol id="type" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 10h.01M11 10h.01M15 10h.01M7 14h10"/></symbol>
+    <symbol id="list" viewBox="0 0 24 24"><path d="M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01"/></symbol>
+    <symbol id="rule" viewBox="0 0 24 24"><path d="M4 4h12l4 4v12H4z"/><path d="M8 12l3 3 5-6"/></symbol>
+    <symbol id="spark" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M6 18l2.5-2.5M15.5 8.5L18 6"/></symbol>
+    <symbol id="card" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 10h6M7 14h10"/><circle cx="17" cy="9.5" r="1.5"/></symbol>
+    <symbol id="q" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17h.01"/></symbol>
+    <symbol id="x" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></symbol>
+    <symbol id="play" viewBox="0 0 24 24"><path d="M7 5l12 7-12 7z"/></symbol>
+    <symbol id="code" viewBox="0 0 24 24"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5"/></symbol>
+    <symbol id="py" viewBox="0 0 24 24"><path d="M12 3c-4 0-4 2-4 3v2h4v1H6c-2 0-3 2-3 4s1 4 3 4h2v-3c0-1 1-2 2-2h4c1 0 2-1 2-2V6c0-1-1-3-4-3z"/><path d="M10 6h.01"/></symbol>
+    <symbol id="nokey" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="M11 12l8-8M16 7l2 2M3 3l18 18"/></symbol>
+    <symbol id="wifi" viewBox="0 0 24 24"><path d="M2 8.5a15 15 0 0 1 20 0M5 12a10 10 0 0 1 14 0M8.5 15.5a5 5 0 0 1 7 0M12 19h.01"/><path d="M3 3l18 18"/></symbol>
+    <symbol id="lib" viewBox="0 0 24 24"><path d="M4 4h4v16H4zM10 4h4v16h-4zM16 5l4 1-3 14-4-1z"/></symbol>
+    <symbol id="db" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></symbol>
+    <symbol id="cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+    <symbol id="cam" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+    <symbol id="users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.5 3-6 7-6s7 2.5 7 6"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14c2.4.6 4 2.8 4 6"/></symbol>
+  </defs>
+</svg>
+
+<header class="top"><div class="wrap">
+  <div class="brand"><span class="dots"><i style="background:#173B6B"></i><i style="background:#E94531"></i><i style="background:#79523b"></i><i style="background:#bc931a"></i></span>Team 11</div>
+  <nav>
+    <a href="#how">How it decides</a><a href="#run">See it run</a><a href="#try">Run it</a><a href="#results">Results</a><a href="#fails">Where it fails</a><a href="#team">Team</a>
+  </nav>
+</div></header>
+
+<main class="wrap">
+
+<div class="hero">
+  <h1>Same item. <span class="sh">Shanghai</span> or <span class="hk">Hong Kong</span>?<br>Different bin.</h1>
+  <p class="sub">A bilingual sorting helper where <b>each city's official rules decide</b>, with the source shown on every answer.</p>
+  <div class="links">
+    <!-- When the demo is on YouTube: set href and remove aria-disabled -->
+    <a class="btn primary" id="demo-link" href="#" aria-disabled="true"><svg class="i"><use href="#play"/></svg>Demo video · soon</a>
+    <a class="btn" href="https://github.com/hryLiuYibo/AILT9019_Team11_Project"><svg class="i"><use href="#code"/></svg>Code (teaching team access)</a>
+  </div>
+</div>
+
+<div class="explorer" id="explorer" aria-label="Pick an item to see where it goes in each city">
+  <div class="picker" id="picker" role="toolbar" aria-label="Items"></div>
+  <div class="cities">
+    <div class="city" data-city="shanghai">
+      <h3>Shanghai <span>68 items · 2024 Guidelines</span></h3>
+      <div class="bins" data-bins></div>
+      <div class="verdict" data-verdict aria-live="polite"></div>
+    </div>
+    <div class="city" data-city="hongkong">
+      <h3>Hong Kong <span>45 items · EPD FAQ</span></h3>
+      <div class="bins" data-bins></div>
+      <div class="verdict" data-verdict aria-live="polite"></div>
+    </div>
+  </div>
+  <div class="exfoot">
+    <div class="key">
+      <span><i style="background:var(--ink)"></i>Matched rule</span>
+      <span><i style="background:var(--ask)"></i>Asks first</span>
+      <span><i style="background:var(--stop)"></i>Won't guess</span>
+    </div>
+    <span>Every answer here is real output of our classifier (<code>src/classify.py</code>), saved from an offline run.</span>
+  </div>
+</div>
+
+<section id="how">
+  <div class="sh2"><span class="n">01</span><h2>How it decides</h2></div>
+  <div class="pipe">
+    <div class="stage"><div class="disc"><svg class="i"><use href="#pin"/></svg></div><div><b>Pick a city</b><span>Separate data per city</span></div></div>
+    <div class="stage"><div class="disc"><svg class="i"><use href="#type"/></svg></div><div><b>Type or pick</b><span>中文 / English autocomplete</span></div></div>
+    <div class="stage"><div class="disc"><svg class="i"><use href="#rule"/></svg></div><div><b>Local rule decides</b><span>Exact match · offline</span></div></div>
+    <div class="stage ex"><div class="disc"><svg class="i"><use href="#spark"/></svg></div><div><b>AI rewords</b><span>Optional · facts locked</span></div></div>
+    <div class="stage"><div class="disc"><svg class="i"><use href="#card"/></svg></div><div><b>Bin + source</b><span>Prep steps · official link</span></div></div>
+  </div>
+  <div class="forks">
+    <span class="fork ask"><svg class="i"><use href="#q"/></svg>Material only → asks for the item</span>
+    <span class="fork ask"><svg class="i"><use href="#q"/></svg>Depends on condition → asks</span>
+    <span class="fork stop"><svg class="i"><use href="#x"/></svg>Not in this city → never borrows</span>
+    <span class="fork stop"><svg class="i"><use href="#x"/></svg>Prices, bookings, medical → refuses</span>
+  </div>
+  <div class="plegend"><span><i></i>Built by our team</span><span><i class="e"></i>Existing model (DeepSeek), off by default</span></div>
+</section>
+
+<section id="run">
+  <div class="sh2"><span class="n">02</span><h2>See it run</h2></div>
+  <div class="viewer">
+    <div class="steps" role="tablist" id="steps"></div>
+    <div>
+      <div class="frame"><div class="bar"><i></i><i></i><i></i><code>localhost:8000 · --offline</code></div><img id="shot" alt=""></div>
+      <p class="proof">Unedited screenshots of the real app, 18 Nov 2026, no API key.</p>
+    </div>
+  </div>
+</section>
+
+<section id="try">
+  <div class="sh2"><span class="n">03</span><h2>Run it yourself</h2></div>
+  <div class="runs">
+    <div class="term"><div class="bar"><i></i><i></i><i></i></div>
+<pre><span class="p">$</span> git clone https://github.com/hryLiuYibo/AILT9019_Team11_Project.git
+<span class="p">$</span> cd AILT9019_Team11_Project
+<span class="p">$</span> python tests/run_tests.py
+<span class="c">  checks: 55/55 passed</span>
+<span class="ok">  result: ALL PASS</span>
+<span class="p">$</span> python src/app.py --offline
+<span class="c">  → open http://localhost:8000</span></pre></div>
+    <div class="reqs">
+      <div class="req"><svg class="i"><use href="#py"/></svg><b>Python 3.10+</b><span>Standard library only</span></div>
+      <div class="req"><svg class="i"><use href="#nokey"/></svg><b>No API key</b><span>AI wording is opt-in</span></div>
+      <div class="req"><svg class="i"><use href="#wifi"/></svg><b>Works offline</b><span>Rules ship with the code</span></div>
+      <div class="req"><svg class="i"><use href="#lib"/></svg><b>Repository</b><a href="https://github.com/hryLiuYibo/AILT9019_Team11_Project">hryLiuYibo/AILT9019_Team11_Project</a></div>
+    </div>
+  </div>
+</section>
+
+<section id="results">
+  <div class="sh2"><span class="n">04</span><h2>Results</h2></div>
+  <div class="stats">
+    <div class="stat"><div class="v">84<small>/84</small></div><div class="l">Shanghai test cases</div><div class="dotsrow" data-dots="84,84"></div></div>
+    <div class="stat"><div class="v">99<small>/99</small></div><div class="l">Hong Kong test cases</div><div class="dotsrow" data-dots="99,99"></div></div>
+    <div class="stat"><div class="v">19<small>/19</small></div><div class="l">Condition-tag cases</div><div class="dotsrow" data-dots="19,19"></div></div>
+    <div class="stat"><div class="v">0<small>/10</small></div><div class="l">Ambiguous inputs given a bin by mistake</div><div class="dotsrow" data-dots="0,10"></div></div>
+  </div>
+  <div class="recall">
+    <div class="rc"><div class="t">20 held-out phrasings · found by name or top-3 suggestions</div><div class="grid20" data-grid="10"></div><div class="v">10/20<small>per city</small></div></div>
+    <div class="rc"><div class="t">Same 20 · correct once the item is named</div><div class="grid20" data-grid="20"></div><div class="v">20/20<small>per city</small></div></div>
+  </div>
+  <p class="evi">From <code>tests/run_tests.py</code> and <code>tools/evaluate_recall.py</code>, offline, 13 Nov 2026. Held-out set never used for tuning. Optional AI wording: one live DeepSeek query passed, facts unchanged (smoke test only).</p>
+</section>
+
+<section id="fails">
+  <div class="sh2"><span class="n">05</span><h2>Where it fails</h2></div>
+  <div class="fail">
+    <div class="chat">
+      <div class="bubble u"><small>Hong Kong</small>used PET bottle from the vending machine</div>
+      <div class="bubble a">✕ Not in the Hong Kong corpus. No Shanghai rule is borrowed.</div>
+      <div class="diag">
+        <b>Expected</b><span>Plastic recycling, brown bin</span>
+        <b>Cause</b><span>Exact matching only; no fuzzy search</span>
+        <b>Trade-off</b><span>Safer than a fuzzy match picking the wrong bin</span>
+        <b>Next</b><span>Fuzzy matches as suggestions only, retested on the held-out set</span>
+      </div>
+    </div>
+    <div class="lims">
+      <div class="lim"><svg class="i"><use href="#db"/></svg><b>113</b>items in total. Hong Kong food waste is not covered yet.</div>
+      <div class="lim"><svg class="i"><use href="#cal"/></svg><b>13 Nov</b>Rules checked on this date. On-site signs come first.</div>
+      <div class="lim"><svg class="i"><use href="#cam"/></svg><b>0</b>real photos tested, so no photo accuracy is claimed.</div>
+      <div class="lim"><svg class="i"><use href="#users"/></svg><b>0</b>user studies so far.</div>
+    </div>
+  </div>
+</section>
+
+<section id="team">
+  <div class="sh2"><span class="n">06</span><h2>Team 11</h2></div>
+  <div class="team">
+    <div class="mem"><i style="--c:#173B6B">LY</i>LIU Yibo</div>
+    <div class="mem"><i style="--c:#c4402f">LS</i>LU Song Lun</div>
+    <div class="mem"><i style="--c:#79523b">WS</i>WEN Sum Yee</div>
+    <div class="mem"><i style="--c:#9a7a14">WZ</i>WANG Zixuan</div>
+  </div>
+</section>
+
+</main>
+
+<footer>AILT9019 AI Literacy for Computing and Data Science · The University of Hong Kong · 2026 · Course prototype, not official disposal advice.
+  Sources: <a href="https://lhsr.sh.gov.cn/srgl/20240806/40b9feaa-53db-472f-8a6b-2c3cf0465def.html">Shanghai 2024 Guidelines</a> · <a href="https://www.wastereduction.gov.hk/en-hk/recycling-faq/greencommunity-faq">HK EPD GREEN@COMMUNITY FAQ</a></footer>
+
+<script>
+const DATA = /*DATA*/;
+const BINS = {
+  shanghai:[["REC","Recyclable","#173B6B"],["HAZ","Hazardous","#E94531"],["WET","Wet","#6A483F"],["DRY","Dry","#2C2B28",1]],
+  hongkong:[["PAPER","Paper","#2462a3"],["METAL","Metal","#bc931a"],["PLASTIC","Plastic","#79523b"],["GC","GREEN@ COMMUNITY","#4f8a5b"],["GENERAL","General","#6e6e6e"]]
+};
+const GC = ["GLASS","CARTON","FOAM","BATTERY","LAMP"];
+const LABEL = {"plastic drink bottle":"Plastic bottle","newspaper":"Newspaper","cardboard box":"Cardboard box","rechargeable battery":"Battery","fluorescent tube":"Fluorescent tube","milk carton":"Milk carton","styrofoam":"Styrofoam","fruit peel":"Fruit peel","plastic":"just \"plastic\""};
+const $ = (s,el=document)=>el.querySelector(s);
+const esc = s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+for (const city of ["shanghai","hongkong"]) {
+  $(`.city[data-city=${city}] [data-bins]`).innerHTML = BINS[city].map(([k,n,c,d])=>
+    `<div class="bin${d?" dark":""}" data-k="${k}" style="--c:${c}"><div class="can"></div><small>${n}</small></div>`).join("");
+}
+const picker = $("#picker");
+picker.innerHTML = DATA.map((r,i)=>`<button class="chip${r.icon==="material"?" mat":""}" data-i="${i}" aria-pressed="false"><svg class="i"><use href="#${r.icon}"/></svg>${LABEL[r.q]||r.q}</button>`).join("");
+
+function render(city, r){
+  const box = $(`.city[data-city=${city}]`), bins = $("[data-bins]",box), v = $("[data-verdict]",box);
+  bins.classList.remove("has-hit","none"); bins.querySelectorAll(".bin").forEach(b=>b.classList.remove("hit"));
+  v.className = "verdict"; v.style.removeProperty("--c");
+  if (r.s === "matched") {
+    const k = GC.includes(r.code) ? "GC" : r.code;
+    const b = bins.querySelector(`[data-k="${k}"]`);
+    if (b) { b.classList.add("hit"); bins.classList.add("has-hit"); v.style.setProperty("--c", getComputedStyle(b).getPropertyValue("--c")); }
+    v.innerHTML = `<div class="head"><i></i>${esc(r.cat)}</div>
+      <div class="prep"><svg class="i"><use href="#hand"/></svg><span>${esc(r.prep)}</span></div>
+      <div class="src"><svg class="i"><use href="#link"/></svg>${r.url?`<a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.src)}</a>`:esc(r.src)}</div>`;
+  } else {
+    bins.classList.add("none");
+    const ask = r.s === "needs_condition" || r.s === "needs_item";
+    v.classList.add(ask ? "ask" : "stop");
+    v.innerHTML = `<div class="head">${ask?"? Asks before deciding":"✕ Won't guess"}</div><div class="msg">${esc(r.msg)}</div>`;
+  }
+}
+function cityView(city, base, sel){
+  render(city, sel == null ? base : base.opts[sel].r);
+  if (!base.opts) return;
+  const o = document.createElement("div"); o.className = "opts";
+  base.opts.forEach((op,j)=>{
+    const b = document.createElement("button"); b.className = "opt"; b.textContent = op.label;
+    b.setAttribute("aria-pressed", j === sel);
+    b.onclick = ()=> cityView(city, base, j === sel ? null : j);
+    o.appendChild(b);
+  });
+  $(`.city[data-city=${city}] [data-verdict]`).appendChild(o);
+}
+function show(i){
+  picker.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed", c.dataset.i==i));
+  for (const city of ["shanghai","hongkong"]) cityView(city, DATA[i][city], null);
+}
+picker.addEventListener("click", e=>{ const c=e.target.closest(".chip"); if(c) show(+c.dataset.i); });
+show(0);
+
+/* screenshot steps */
+const SHOTS = [
+  ["img/shanghai_bottle.jpg","Shanghai · plastic bottle","Recyclable, blue bin","Shanghai result for plastic bottle: Recyclable Waste, blue bin, with preparation and source"],
+  ["img/hongkong_bottle.jpg","Hong Kong · same input","Plastic, brown bin","Hong Kong result for plastic bottle: plastic recycling, brown bin, with caveat and EPD FAQ Q6 source"],
+  ["img/autocomplete.jpg","Type 膠","Bilingual suggestions","Typing 膠 lists six bilingual item suggestions"],
+  ["img/material_only.jpg","Type \"plastic\"","Asks for the item","Input plastic returns a follow-up question instead of a category"]
+];
+const steps = $("#steps"), shot = $("#shot");
+steps.innerHTML = SHOTS.map((s,i)=>`<button class="stepbtn" role="tab" data-i="${i}" aria-selected="false"><span class="k">${i+1}</span><span>${esc(s[1])}<em>${esc(s[2])}</em></span></button>`).join("");
+function step(i){ steps.querySelectorAll(".stepbtn").forEach(b=>b.setAttribute("aria-selected", b.dataset.i==i)); shot.src=SHOTS[i][0]; shot.alt=SHOTS[i][3]; }
+steps.addEventListener("click", e=>{ const b=e.target.closest(".stepbtn"); if(b) step(+b.dataset.i); });
+SHOTS.forEach(s=>{ const im=new Image(); im.src=s[0]; });
+step(0);
+
+/* result glyphs */
+document.querySelectorAll("[data-dots]").forEach(el=>{ const [ok,n]=el.dataset.dots.split(",").map(Number); const bad=el.closest(".stat").querySelector(".v").textContent.startsWith("0");
+  el.innerHTML = Array.from({length:n},(_,i)=> bad ? '<i class="x"></i>' : `<i${i<ok?"":' class="x"'}></i>`).join(""); });
+document.querySelectorAll("[data-grid]").forEach(el=>{ const k=+el.dataset.grid; el.innerHTML = Array.from({length:20},(_,i)=>`<i${i<k?"":' class="x"'}></i>`).join(""); });
+</script>
+</body>
+</html>
