@@ -3,475 +3,595 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Waste Sorting Helper · Team 11</title>
-<meta name="description" content="Same item, two cities, two different bins. A bilingual waste-sorting helper for Shanghai and Hong Kong where sourced local rules decide. AILT9019 Team 11.">
+<title>One Item, Two Bins · Team 11</title>
+<meta name="description" content="A bilingual waste-sorting helper for Shanghai and Hong Kong. Each answer comes from the city's own official rules, and cites them. AILT9019 Team 11.">
+<link rel="preload" href="fonts/archivo-latin-wdth-normal.woff2" as="font" type="font/woff2" crossorigin>
 <style>
+@font-face{font-family:"Archivo V";src:url(fonts/archivo-latin-wdth-normal.woff2) format("woff2-variations");font-weight:100 900;font-stretch:62% 125%;font-display:swap}
+@font-face{font-family:"JB Mono";src:url(fonts/jetbrains-mono-latin-400-normal.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"JB Mono";src:url(fonts/jetbrains-mono-latin-500-normal.woff2) format("woff2");font-weight:500;font-display:swap}
+
 :root{
-  --bg:#f4f3ee; --surface:#ffffff; --surface2:#ecebe5; --ink:#191d1b; --ink2:#454c48; --muted:#737a76; --line:#dedcd4;
-  --accent:#1f6b4a; --accent-ink:#fff; --accent-soft:#e1eee6;
-  --ask:#9a5a0c; --ask-soft:#fbefdc; --stop:#a1352d; --stop-soft:#f8e4e1;
-  --exist:#8a908c; --dim:.22;
-  --term:#141a17; --term-ink:#d6e3dc; --term-dim:#7f9a8d;
+  --paper:#eeece5; --paper2:#e5e2d9; --ink:#141413; --ink2:#46453f; --mute:#82807a; --hair:#c9c5b9;
+  --ask:#b86e00; --stop:#c0321d;
+  --sans:"Archivo V","PingFang SC","PingFang TC","Microsoft YaHei","Microsoft JhengHei","Noto Sans CJK SC",system-ui,sans-serif;
+  --mono:"JB Mono",ui-monospace,Consolas,"PingFang SC","Microsoft YaHei",monospace;
+  --pad:16px;
 }
 @media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#111412; --surface:#191d1b; --surface2:#222724; --ink:#e9ece9; --ink2:#c0c8c3; --muted:#8f9a94; --line:#2b322e;
-    --accent:#72c196; --accent-ink:#0d1a13; --accent-soft:#1b2b22;
-    --ask:#e7ad5f; --ask-soft:#2b2316; --stop:#ee8c82; --stop-soft:#2d1c1a;
-    --exist:#7c8580; --dim:.3; --term:#0b0f0d;
-  }
+  :root:not([data-theme="light"]){--paper:#131312; --paper2:#1b1b19; --ink:#ebe8df; --ink2:#b8b5ab; --mute:#7f7c74; --hair:#33322e; --ask:#f0a640; --stop:#f0705c}
 }
-:root[data-theme="dark"]{
-  --bg:#111412; --surface:#191d1b; --surface2:#222724; --ink:#e9ece9; --ink2:#c0c8c3; --muted:#8f9a94; --line:#2b322e;
-  --accent:#72c196; --accent-ink:#0d1a13; --accent-soft:#1b2b22;
-  --ask:#e7ad5f; --ask-soft:#2b2316; --stop:#ee8c82; --stop-soft:#2d1c1a;
-  --exist:#7c8580; --dim:.3; --term:#0b0f0d;
-}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-padding-top:60px}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,"PingFang SC","PingFang TC","Microsoft YaHei","Microsoft JhengHei","Noto Sans CJK SC","Noto Sans CJK TC",sans-serif}
-a{color:var(--accent)}
-button{font:inherit;color:inherit}
-code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.9em}
-.wrap{max-width:1040px;margin:0 auto;padding:0 16px}
-svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+:root[data-theme="dark"]{--paper:#131312; --paper2:#1b1b19; --ink:#ebe8df; --ink2:#b8b5ab; --mute:#7f7c74; --hair:#33322e; --ask:#f0a640; --stop:#f0705c}
 
-/* top bar */
-.top{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
-.top .wrap{display:flex;align-items:center;gap:20px;height:52px}
-.brand{display:flex;align-items:center;gap:8px;font-weight:700;white-space:nowrap}
-.brand .dots{display:flex;gap:3px}
-.brand .dots i{width:7px;height:16px;border-radius:2px}
-.top nav{display:flex;gap:18px;overflow-x:auto;font-size:14px;white-space:nowrap;margin-left:auto}
-.top nav a{color:var(--muted);text-decoration:none}
-.top nav a:hover{color:var(--ink)}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.5 var(--sans);font-stretch:100%}
+a{color:inherit;text-decoration-thickness:1px;text-underline-offset:3px}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+.wrap{max-width:1240px;margin:0 auto;padding:0 var(--pad)}
+.mono{font-family:var(--mono);font-size:12px;letter-spacing:.02em}
+.cap{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+.disp{font-family:var(--sans);font-stretch:68%;font-weight:800;text-transform:uppercase;letter-spacing:-.005em;line-height:.88}
+
+/* masthead */
+.mast{border-bottom:1.5px solid var(--ink)}
+.mast .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:46px}
+.mast .id{display:flex;align-items:center;gap:10px}
+.mast .id i{display:inline-block;width:6px;height:14px}
+.mast nav{display:flex;gap:22px;white-space:nowrap}
+.mast .id{white-space:nowrap}
+.mast nav a{text-decoration:none}
+.mast nav a:hover{text-decoration:underline}
+.mast nav a[aria-disabled="true"]{color:var(--mute);pointer-events:none}
 
 /* hero */
-.hero{padding:40px 0 8px;text-align:center}
-.hero h1{font-size:clamp(30px,5.4vw,52px);line-height:1.05;margin:0;letter-spacing:-.02em}
-.hero h1 .sh,.hero h1 .hk{text-decoration:underline;text-decoration-thickness:6px;text-underline-offset:6px}
-.hero h1 .sh{text-decoration-color:#2462a3}.hero h1 .hk{text-decoration-color:#a06a45}
-.hero .sub{margin:12px auto 0;color:var(--muted);font-size:17px}
-.hero .sub b{color:var(--ink)}
-.links{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin:20px 0 0}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 15px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);text-decoration:none;font-weight:600;font-size:14px}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.btn[aria-disabled="true"]{opacity:.5;pointer-events:none}
-.btn svg.i{width:16px;height:16px}
+.hero{display:grid;grid-template-columns:repeat(12,1fr);gap:0 24px;padding:40px 0 28px;align-items:end}
+.hero h1{grid-column:1/9;margin:0;font-size:clamp(56px,12.4vw,128px);white-space:nowrap}
+.hero h1 span{display:block}
+.hero h1 .c1{color:var(--ink)}
+.hero .dek{grid-column:9/13;padding-bottom:10px}
+.hero .dek p{margin:0 0 14px;font-size:18px;line-height:1.35;font-stretch:92%}
+.hero .zh{font-size:15px;color:var(--ink2);margin:0 0 18px}
+.facts{border-top:1.5px solid var(--ink)}
+.facts div{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid var(--hair);padding:6px 0}
+.facts b{font-weight:500;color:var(--ink)}
 
-/* explorer */
-.explorer{margin:28px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:0 1px 0 var(--line)}
-.picker{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 12px;scrollbar-width:thin}
-.chip{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:92px;padding:12px 8px 10px;border-radius:14px;border:1px solid var(--line);background:var(--bg);cursor:pointer;font-size:13px;line-height:1.2;text-align:center;transition:transform .15s,border-color .15s}
-.chip:hover{transform:translateY(-2px)}
-.chip[aria-pressed="true"]{border-color:var(--ink);background:var(--surface);box-shadow:0 0 0 1px var(--ink) inset}
-.chip svg.i{width:28px;height:28px}
-.chip.mat{border-style:dashed}
-.cities{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.city{border-radius:16px;background:var(--bg);padding:16px 16px 14px;min-width:0}
-.city h3{display:flex;align-items:baseline;justify-content:space-between;margin:0 0 14px;font-size:15px}
-.city h3 span{font-weight:400;color:var(--muted);font-size:12px}
-.bins{display:flex;gap:8px;align-items:flex-end;height:96px}
-.bin{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;transition:opacity .25s,transform .25s;min-width:0}
-.bin .can{position:relative;width:100%;max-width:58px;height:54px;border-radius:4px 4px 8px 8px;background:var(--c)}
-.bin .can::before{content:"";position:absolute;left:-2px;right:-2px;top:-9px;height:7px;border-radius:3px;background:var(--c);filter:brightness(1.15)}
-.bin .can::after{content:"";position:absolute;left:30%;right:30%;top:16px;height:3px;border-radius:2px;background:rgba(255,255,255,.45)}
-.bin.dark .can{box-shadow:0 0 0 1px var(--line)}
-.bin small{font-size:11px;color:var(--ink2);text-align:center;line-height:1.15;height:26px;overflow:hidden}
-.bins.has-hit .bin{opacity:var(--dim)}
-.bins.has-hit .bin.hit{opacity:1;transform:translateY(-8px)}
-.bins.none .bin{opacity:var(--dim)}
-.verdict{margin-top:12px;border-radius:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--line);min-height:104px}
-.verdict .head{display:flex;align-items:center;gap:8px;font-weight:700}
-.verdict .head i{width:12px;height:12px;border-radius:3px;background:var(--c);flex:none}
-.verdict .prep{display:flex;gap:8px;margin-top:8px;font-size:14px;color:var(--ink2)}
-.verdict .prep svg.i{width:18px;height:18px;color:var(--accent);margin-top:1px}
-.verdict .src{display:flex;gap:6px;align-items:center;margin-top:8px;font-size:12px;color:var(--muted)}
-.verdict .src svg.i{width:14px;height:14px}
-.verdict.ask{background:var(--ask-soft);border-color:transparent;color:var(--ask)}
-.verdict.stop{background:var(--stop-soft);border-color:transparent;color:var(--stop)}
-.verdict .msg{font-size:14px;margin-top:6px;color:var(--ink2)}
-.opts{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.opt{border:1px solid currentColor;background:transparent;border-radius:999px;padding:4px 11px;font-size:13px;cursor:pointer;color:var(--ask)}
-.opt[aria-pressed="true"]{background:var(--ask);color:var(--surface)}
-.exfoot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:12px;font-size:12px;color:var(--muted)}
-.key{display:flex;gap:14px;flex-wrap:wrap}
-.key span{display:inline-flex;align-items:center;gap:6px}
-.key i{width:10px;height:10px;border-radius:3px}
+/* section frame */
+.sec{border-top:1.5px solid var(--ink);padding:14px 0 56px}
+.sec-h{display:grid;grid-template-columns:repeat(12,1fr);gap:0 24px;align-items:baseline;margin-bottom:28px}
+.sec-h .cap{grid-column:1/3;padding-top:6px}
+.sec-h h2{grid-column:3/10;margin:0;font-size:clamp(40px,6vw,76px)}
+.sec-h .note{grid-column:10/13;font-size:14px;color:var(--ink2);line-height:1.4}
 
-/* sections */
-section{padding:56px 0 8px}
-.sh2{display:flex;align-items:center;gap:12px;margin:0 0 20px}
-.sh2 .n{font:600 12px/1 ui-monospace,Consolas,monospace;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:5px 8px}
-h2{font-size:26px;margin:0;letter-spacing:-.01em}
+/* sorter */
+.sorter{border-top:1.5px solid var(--ink)}
+.picker{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--hair)}
+.pick{padding:12px 14px 11px;font-family:var(--mono);font-size:12px;letter-spacing:.03em;border-right:1px solid var(--hair);transition:background .15s,color .15s}
+.pick:hover{background:var(--paper2)}
+.pick[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.pick.mat{font-style:italic}
+.stage{position:relative;height:440px;border-bottom:1px solid var(--hair)}
+.stage canvas{display:block;width:100%;height:100%}
+.stage .hint{position:absolute;left:0;bottom:10px}
+.verdicts{display:grid;grid-template-columns:1fr 1fr}
+.v{padding:18px 24px 22px 0;min-height:190px}
+.v+.v{padding-left:24px;border-left:1px solid var(--hair)}
+.v .city{font-size:34px;margin:0 0 14px}
+.v .cat{display:flex;align-items:center;gap:12px;font-size:20px;font-weight:600;font-stretch:90%;line-height:1.15}
+.v .cat i{width:22px;height:22px;flex:none;background:var(--c);box-shadow:inset 0 0 0 1px rgba(127,127,127,.35)}
+.v .prep{margin:10px 0 8px;color:var(--ink2);font-size:15px}
+.v .src{color:var(--mute)}
+.v .flag{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:3px 7px;border:1.5px solid currentColor}
+.v .flag.ask{color:var(--ask)} .v .flag.stop{color:var(--stop)}
+.v .msg{margin:10px 0 0;color:var(--ink2);font-size:15px;max-width:52ch}
+.opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.opt{font-family:var(--mono);font-size:12px;padding:6px 10px;border:1.5px solid var(--ask);color:var(--ask)}
+.opt[aria-pressed="true"]{background:var(--ask);color:var(--paper)}
+.provenance{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:12px 0 0;border-top:1px solid var(--hair)}
+.legend{display:flex;gap:18px;flex-wrap:wrap}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:9px;height:9px}
 
-/* pipeline */
-.pipe{display:flex;align-items:stretch;gap:0}
-.stage{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;position:relative;padding:0 6px}
-.stage .disc{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:var(--surface);border:2px solid var(--accent);color:var(--accent)}
-.stage.ex .disc{border-color:var(--exist);color:var(--exist);border-style:dashed}
-.stage .disc svg.i{width:28px;height:28px}
-.stage>div{display:flex;flex-direction:column;align-items:center;gap:2px}
-.stage b{font-size:14px}
-.stage span{font-size:12px;color:var(--muted);max-width:150px}
-.stage:not(:last-child)::after{content:"";position:absolute;top:32px;left:calc(50% + 40px);right:calc(-50% + 40px);border-top:2px dotted var(--line)}
-.forks{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:22px}
-.fork{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:6px 14px;font-size:13px;font-weight:600}
-.fork.ask{background:var(--ask-soft);color:var(--ask)}
-.fork.stop{background:var(--stop-soft);color:var(--stop)}
-.fork svg.i{width:16px;height:16px}
-.plegend{display:flex;justify-content:center;gap:18px;margin-top:16px;font-size:12px;color:var(--muted)}
-.plegend span{display:inline-flex;align-items:center;gap:6px}
-.plegend i{width:14px;height:14px;border-radius:50%;border:2px solid var(--accent)}
-.plegend i.e{border-color:var(--exist);border-style:dashed}
+/* how */
+.steps5{display:grid;grid-template-columns:repeat(5,1fr);gap:0 24px}
+.st{border-top:4px solid var(--ink);padding-top:10px}
+.st.model{border-top-style:dashed;border-top-color:var(--mute)}
+.st .n{display:block;margin-bottom:22px}
+.st b{display:block;font-family:var(--sans);font-stretch:72%;font-weight:700;font-size:26px;line-height:1;text-transform:uppercase}
+.st p{margin:8px 0 0;font-size:14px;color:var(--ink2);line-height:1.35}
+.exits{margin-top:36px;display:grid;grid-template-columns:repeat(12,1fr);gap:0 24px}
+.exits .cap{grid-column:1/3;padding-top:4px}
+.exits ul{grid-column:3/13;list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:0 24px}
+.exits li{display:flex;gap:12px;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--hair);font-size:15px}
+.exits li i{flex:none;width:10px;height:10px;transform:translateY(1px)}
+.exits li b{font-weight:600}
+.key2{margin-top:14px;display:flex;gap:22px;flex-wrap:wrap}
+.key2 span{display:inline-flex;align-items:center;gap:8px}
+.key2 i{display:inline-block;width:28px;border-top:4px solid var(--ink)}
+.key2 i.d{border-top:4px dashed var(--mute)}
 
 /* run viewer */
-.viewer{display:grid;grid-template-columns:240px 1fr;gap:16px;align-items:start}
-.steps{display:flex;flex-direction:column;gap:6px}
-.stepbtn{display:flex;gap:10px;align-items:center;text-align:left;padding:10px 12px;border-radius:12px;border:1px solid transparent;background:transparent;cursor:pointer;font-size:14px}
-.stepbtn .k{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--surface2);font-size:12px;font-weight:700;flex:none}
-.stepbtn[aria-selected="true"]{background:var(--surface);border-color:var(--line)}
-.stepbtn[aria-selected="true"] .k{background:var(--accent);color:var(--accent-ink)}
-.stepbtn em{display:block;font-style:normal;font-size:12px;color:var(--muted)}
-.frame{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
-.frame .bar{display:flex;align-items:center;gap:6px;padding:9px 12px;border-bottom:1px solid var(--line);background:var(--surface2)}
-.frame .bar i{width:9px;height:9px;border-radius:50%;background:var(--line)}
-.frame .bar code{margin-left:10px;font-size:12px;color:var(--muted)}
-.frame img{display:block;width:100%;height:auto}
-.proof{font-size:12px;color:var(--muted);margin-top:8px}
+.viewer{display:grid;grid-template-columns:repeat(12,1fr);gap:0 24px;align-items:start}
+.tabs{grid-column:1/4;display:flex;flex-direction:column;border-top:1px solid var(--hair)}
+.tab{display:grid;grid-template-columns:28px 1fr;text-align:left;padding:12px 0;border-bottom:1px solid var(--hair)}
+.tab .n{color:var(--mute)}
+.tab span:last-child{font-size:15px;line-height:1.3}
+.tab em{display:block;font-style:normal;font-family:var(--mono);font-size:11px;color:var(--mute);margin-top:3px}
+.tab[aria-selected="true"]{box-shadow:inset 3px 0 0 var(--ink);padding-left:12px}
+.tab[aria-selected="true"] .n{color:var(--ink)}
+.shotbox{grid-column:4/13;border:1.5px solid var(--ink)}
+.shotbox .bar{display:flex;justify-content:space-between;padding:7px 10px;border-bottom:1.5px solid var(--ink)}
+.shotbox img{display:block;width:100%;height:auto}
+.viewer .proof{grid-column:4/13;margin-top:8px}
 
 /* run it */
-.runs{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;align-items:stretch}
-.runs>*{min-width:0}
-.term{background:var(--term);color:var(--term-ink);border-radius:14px;overflow:hidden}
-.term .bar{display:flex;gap:6px;padding:10px 12px;background:rgba(255,255,255,.05)}
-.term .bar i{width:9px;height:9px;border-radius:50%;background:#34413b}
-.term pre{margin:0;padding:12px 16px 16px;white-space:pre-wrap;word-break:break-all;font-size:13.5px;line-height:1.75}
-.term .p{color:#72c196}.term .c{color:var(--term-dim)}.term .ok{color:#72c196;font-weight:700}
-.reqs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.req{display:flex;flex-direction:column;justify-content:center;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
-.req svg.i{color:var(--accent)}
-.req b{font-size:15px}
-.req span{font-size:12px;color:var(--muted)}
-.req a{font-size:13px;word-break:break-all}
+.runs{display:grid;grid-template-columns:repeat(12,1fr);gap:0 24px;align-items:start}
+.term{grid-column:1/8;background:#141413;color:#e9e6dc;padding:18px 20px;font-family:var(--mono);font-size:13.5px;line-height:1.8;white-space:pre-wrap;word-break:break-all;margin:0}
+:root:not([data-theme="light"]) .term{box-shadow:inset 0 0 0 1px var(--hair)}
+.term .p{color:#8a877d}.term .ok{color:#9fd3a8}
+.spec{grid-column:8/13;margin:0;border-top:1.5px solid var(--ink)}
+.spec div{display:grid;grid-template-columns:120px 1fr;gap:12px;padding:10px 0;border-bottom:1px solid var(--hair)}
+.spec dt{margin:0}
+.spec dd{margin:0;font-size:15px}
+.spec dd a{word-break:break-all}
 
 /* results */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-.stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
-.stat .v{font-size:34px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
-.stat .v small{font-size:16px;color:var(--muted);font-weight:600}
-.stat .l{font-size:13px;color:var(--ink2);margin-top:8px}
-.dotsrow{display:flex;flex-wrap:wrap;gap:3px;margin-top:10px}
-.dotsrow i{width:7px;height:7px;border-radius:2px;background:var(--accent)}
-.dotsrow i.x{background:var(--line)}
-.recall{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
-.rc{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
-.rc .t{font-size:13px;color:var(--ink2);margin-bottom:10px}
-.grid20{display:grid;grid-template-columns:repeat(10,1fr);gap:4px}
-.grid20 i{aspect-ratio:1;border-radius:4px;background:var(--accent)}
-.grid20 i.x{background:var(--surface2);box-shadow:inset 0 0 0 1px var(--line)}
-.rc .v{font-size:22px;font-weight:700;margin-top:10px;font-variant-numeric:tabular-nums}
-.rc .v small{font-size:13px;color:var(--muted);font-weight:400;margin-left:6px}
-.evi{font-size:12px;color:var(--muted);margin-top:10px}
+.nums{display:grid;grid-template-columns:repeat(4,1fr);border-top:1.5px solid var(--ink);border-bottom:1px solid var(--hair)}
+.num{padding:14px 16px 16px 0}
+.num+.num{padding-left:16px;border-left:1px solid var(--hair)}
+.num .big{font-size:clamp(56px,7vw,96px)}
+.num .big small{font-size:.42em;color:var(--mute)}
+.num p{margin:8px 0 0;font-size:14px;color:var(--ink2);max-width:22ch}
+.strips{display:grid;grid-template-columns:1fr 1fr;gap:0 24px;margin-top:28px}
+.strip .row{display:grid;grid-template-columns:repeat(20,1fr);gap:3px;margin:10px 0 8px}
+.strip .row i{aspect-ratio:1/1.6;background:var(--ink)}
+.strip .row i.x{background:transparent;box-shadow:inset 0 0 0 1px var(--hair)}
+.strip .lab{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.strip .lab b{font-family:var(--sans);font-stretch:68%;font-weight:800;font-size:34px;line-height:1}
+.evi{margin-top:18px;max-width:80ch}
 
-/* failure */
-.fail{display:grid;grid-template-columns:1.2fr 1fr;gap:16px;align-items:start}
-.fail>*{min-width:0}
-.chat{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px}
-.bubble{max-width:88%;border-radius:14px;padding:10px 13px;font-size:14px}
-.bubble.u{align-self:flex-end;background:var(--surface2);border-bottom-right-radius:4px}
-.bubble.u small{display:block;font-size:11px;color:var(--muted)}
-.bubble.a{align-self:flex-start;background:var(--stop-soft);color:var(--stop);border-bottom-left-radius:4px}
-.diag{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:13px;border-top:1px dashed var(--line);padding-top:12px;margin-top:4px}
-.diag b{color:var(--muted);font-weight:600}
-.lims{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.lim{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--ink2)}
-.lim svg.i{color:var(--muted)}
-.lim b{font-size:20px;color:var(--ink);line-height:1}
+/* fails */
+.fails{display:grid;grid-template-columns:repeat(12,1fr);gap:0 24px;align-items:start}
+.ticket{grid-column:1/8;border:1.5px solid var(--ink)}
+.ticket .row{display:grid;grid-template-columns:110px 1fr;gap:12px;padding:12px 16px;border-bottom:1px solid var(--hair);font-size:15px}
+.ticket .row:last-child{border-bottom:0}
+.ticket .in{font-family:var(--mono);font-size:14px}
+.ticket .out{color:var(--stop);font-family:var(--mono);font-size:14px}
+.lims{grid-column:8/13;border-top:1.5px solid var(--ink)}
+.lim{display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--hair)}
+.lim .big{font-size:40px}
+.lim p{margin:0;font-size:14px;color:var(--ink2);line-height:1.35}
 
 /* team */
-.team{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
-.mem{display:flex;flex-direction:column;align-items:center;gap:8px;width:120px;font-size:14px;text-align:center}
-.mem i{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:700;color:#fff;background:var(--c)}
-footer{margin-top:56px;padding:22px 0 40px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);text-align:center}
+.team{display:grid;grid-template-columns:repeat(4,1fr);border-top:1.5px solid var(--ink)}
+.mem{padding:12px 16px 0 0;font-size:clamp(28px,3.4vw,44px)}
+.mem+.mem{padding-left:16px;border-left:1px solid var(--hair)}
+.mem i{display:block;width:100%;height:8px;margin-bottom:12px}
+.colophon{display:grid;grid-template-columns:repeat(12,1fr);gap:0 24px;padding:28px 0 48px;border-top:1px solid var(--hair);margin-top:40px}
+.colophon div{grid-column:span 4;font-size:13px;color:var(--ink2);line-height:1.5}
+.colophon .cap{display:block;margin-bottom:6px}
 
-@media (max-width:860px){
-  .cities,.runs,.fail,.recall{grid-template-columns:1fr}
-  .viewer{grid-template-columns:1fr}
-  .steps{flex-direction:row;overflow-x:auto}
-  .stepbtn{flex:none}
-  .stepbtn em{display:none}
-  .stats{grid-template-columns:1fr 1fr}
-  .pipe{flex-direction:column;gap:18px}
-  .stage{flex-direction:row;text-align:left;gap:14px}
-  .stage .disc{width:52px;height:52px}
-  .stage>div{align-items:flex-start}
-  .stage span{max-width:none}
-  .stage:not(:last-child)::after{top:56px;left:26px;right:auto;bottom:-16px;border-top:0;border-left:2px dotted var(--line)}
-  .top nav{display:none}
+@media (max-width:900px){
+  .hero h1{grid-column:1/13}
+  .hero .dek{grid-column:1/13;padding-top:22px}
+  .sec-h .cap{grid-column:1/13;padding:0 0 6px}
+  .sec-h h2{grid-column:1/13}
+  .sec-h .note{grid-column:1/13;margin-top:10px}
+  .steps5{grid-template-columns:1fr 1fr;gap:28px 16px}
+  .exits .cap,.exits ul{grid-column:1/13}
+  .exits ul{grid-template-columns:1fr}
+  .tabs,.shotbox,.viewer .proof,.term,.spec,.ticket,.lims{grid-column:1/13}
+  .tabs{flex-direction:row;overflow-x:auto;border-top:0;margin-bottom:12px}
+  .tab{flex:none;grid-template-columns:22px auto;padding:10px 12px;border-bottom:0;border-right:1px solid var(--hair)}
+  .tab em{display:none}
+  .tab[aria-selected="true"]{box-shadow:inset 0 -3px 0 var(--ink);padding-left:12px}
+  .spec,.lims{margin-top:20px}
+  .nums{grid-template-columns:1fr 1fr}
+  .num:nth-child(3){padding-left:0;border-left:0}
+  .num:nth-child(n+3){border-top:1px solid var(--hair)}
+  .strips{grid-template-columns:1fr;gap:24px}
+  .team{grid-template-columns:1fr 1fr}
+  .mem:nth-child(3){padding-left:0;border-left:0}
+  .colophon div{grid-column:1/13;margin-bottom:16px}
+  .stage{height:500px}
+  .verdicts{grid-template-columns:1fr}
+  .v{padding-right:0}
+  .v+.v{padding-left:0;border-left:0;border-top:1px solid var(--hair)}
 }
-@media (max-width:420px){
-  .bins{gap:5px}
-  .bin small{font-size:10px}
-  .lims,.reqs{grid-template-columns:1fr}
+@media (max-width:520px){
+  .mast nav{gap:14px}
+  .mast nav .opt-hide,.mast .id>span{display:none}
+  .steps5{grid-template-columns:1fr}
+  .pick{padding:10px 11px;font-size:12px}
+  .ticket .row,.lim{grid-template-columns:1fr;gap:4px}
 }
+@media (prefers-reduced-motion: reduce){ *{transition:none!important} }
 </style>
 </head>
 <body>
 
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <defs>
-    <symbol id="bottle" viewBox="0 0 24 24"><path d="M10 2h4v3l2 3v12a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2V8l2-3z"/><path d="M8 12h8"/></symbol>
-    <symbol id="paper" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h6M7 16h10"/></symbol>
-    <symbol id="box" viewBox="0 0 24 24"><path d="M3 7l9-4 9 4v10l-9 4-9-4z"/><path d="M3 7l9 4 9-4M12 11v10"/></symbol>
-    <symbol id="battery" viewBox="0 0 24 24"><rect x="7" y="4" width="10" height="17" rx="2"/><path d="M10 2h4M12 9v5M10 11.5h4"/></symbol>
-    <symbol id="tube" viewBox="0 0 24 24"><rect x="2" y="9" width="20" height="6" rx="3"/><path d="M5 9v6M19 9v6"/></symbol>
-    <symbol id="carton" viewBox="0 0 24 24"><path d="M7 8l2-5h6l2 5v12a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1z"/><path d="M7 8h10M12 3v5"/></symbol>
-    <symbol id="foam" viewBox="0 0 24 24"><path d="M3 9h18l-2 9H5z"/><path d="M8 9v9M16 9v9"/></symbol>
-    <symbol id="peel" viewBox="0 0 24 24"><path d="M12 7c-4 0-7 3-7 7s3 7 7 7 7-3 7-7-3-7-7-7z"/><path d="M12 7c0-2 1-4 3-5"/></symbol>
-    <symbol id="material" viewBox="0 0 24 24"><path d="M12 3l3 5h-6zM5 20l-2-4 3-5M19 20l2-4-3-5M8 20h8"/></symbol>
-    <symbol id="hand" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></symbol>
-    <symbol id="link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 6 0l3-3a4 4 0 0 0-6-6l-1 1"/><path d="M14 10a4 4 0 0 0-6 0l-3 3a4 4 0 0 0 6 6l1-1"/></symbol>
-    <symbol id="pin" viewBox="0 0 24 24"><path d="M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></symbol>
-    <symbol id="type" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 10h.01M11 10h.01M15 10h.01M7 14h10"/></symbol>
-    <symbol id="list" viewBox="0 0 24 24"><path d="M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01"/></symbol>
-    <symbol id="rule" viewBox="0 0 24 24"><path d="M4 4h12l4 4v12H4z"/><path d="M8 12l3 3 5-6"/></symbol>
-    <symbol id="spark" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M6 18l2.5-2.5M15.5 8.5L18 6"/></symbol>
-    <symbol id="card" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 10h6M7 14h10"/><circle cx="17" cy="9.5" r="1.5"/></symbol>
-    <symbol id="q" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17h.01"/></symbol>
-    <symbol id="x" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></symbol>
-    <symbol id="play" viewBox="0 0 24 24"><path d="M7 5l12 7-12 7z"/></symbol>
-    <symbol id="code" viewBox="0 0 24 24"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5"/></symbol>
-    <symbol id="py" viewBox="0 0 24 24"><path d="M12 3c-4 0-4 2-4 3v2h4v1H6c-2 0-3 2-3 4s1 4 3 4h2v-3c0-1 1-2 2-2h4c1 0 2-1 2-2V6c0-1-1-3-4-3z"/><path d="M10 6h.01"/></symbol>
-    <symbol id="nokey" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="M11 12l8-8M16 7l2 2M3 3l18 18"/></symbol>
-    <symbol id="wifi" viewBox="0 0 24 24"><path d="M2 8.5a15 15 0 0 1 20 0M5 12a10 10 0 0 1 14 0M8.5 15.5a5 5 0 0 1 7 0M12 19h.01"/><path d="M3 3l18 18"/></symbol>
-    <symbol id="lib" viewBox="0 0 24 24"><path d="M4 4h4v16H4zM10 4h4v16h-4zM16 5l4 1-3 14-4-1z"/></symbol>
-    <symbol id="db" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></symbol>
-    <symbol id="cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
-    <symbol id="cam" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol>
-    <symbol id="users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.5 3-6 7-6s7 2.5 7 6"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14c2.4.6 4 2.8 4 6"/></symbol>
-  </defs>
-</svg>
-
-<header class="top"><div class="wrap">
-  <div class="brand"><span class="dots"><i style="background:#173B6B"></i><i style="background:#E94531"></i><i style="background:#79523b"></i><i style="background:#bc931a"></i></span>Team 11</div>
-  <nav>
-    <a href="#how">How it decides</a><a href="#run">See it run</a><a href="#try">Run it</a><a href="#results">Results</a><a href="#fails">Where it fails</a><a href="#team">Team</a>
+<header class="mast"><div class="wrap">
+  <div class="id cap" style="color:var(--ink)"><span><i style="background:#173B6B"></i><i style="background:#E94531"></i><i style="background:#79523b"></i><i style="background:#bc931a"></i></span>AILT9019 / Team 11</div>
+  <nav class="cap" style="color:var(--ink)">
+    <!-- When the demo is on YouTube: set href and remove aria-disabled -->
+    <a id="demo-link" href="#" aria-disabled="true">Demo (soon)</a>
+    <a href="https://github.com/hryLiuYibo/AILT9019_Team11_Project">Code ↗</a>
+    <a class="opt-hide" href="#how">Method</a>
   </nav>
 </div></header>
 
 <main class="wrap">
 
-<div class="hero">
-  <h1>Same item. <span class="sh">Shanghai</span> or <span class="hk">Hong Kong</span>?<br>Different bin.</h1>
-  <p class="sub">A bilingual sorting helper where <b>each city's official rules decide</b>, with the source shown on every answer.</p>
-  <div class="links">
-    <!-- When the demo is on YouTube: set href and remove aria-disabled -->
-    <a class="btn primary" id="demo-link" href="#" aria-disabled="true"><svg class="i"><use href="#play"/></svg>Demo video · soon</a>
-    <a class="btn" href="https://github.com/hryLiuYibo/AILT9019_Team11_Project"><svg class="i"><use href="#code"/></svg>Code (teaching team access)</a>
-  </div>
-</div>
-
-<div class="explorer" id="explorer" aria-label="Pick an item to see where it goes in each city">
-  <div class="picker" id="picker" role="toolbar" aria-label="Items"></div>
-  <div class="cities">
-    <div class="city" data-city="shanghai">
-      <h3>Shanghai <span>68 items · 2024 Guidelines</span></h3>
-      <div class="bins" data-bins></div>
-      <div class="verdict" data-verdict aria-live="polite"></div>
-    </div>
-    <div class="city" data-city="hongkong">
-      <h3>Hong Kong <span>45 items · EPD FAQ</span></h3>
-      <div class="bins" data-bins></div>
-      <div class="verdict" data-verdict aria-live="polite"></div>
+<section class="hero">
+  <h1 class="disp"><span>One item.</span><span>Two cities.</span><span>Two bins.</span></h1>
+  <div class="dek">
+    <p>A bilingual sorting helper for Shanghai and Hong Kong. Every answer comes from that city's own official rules, and links to them.</p>
+    <p class="zh">上海與香港垃圾分類助手</p>
+    <div class="facts mono">
+      <div><span>Shanghai</span><b>68 items · 2024 Guidelines</b></div>
+      <div><span>Hong Kong</span><b>45 items · EPD FAQ</b></div>
+      <div><span>Runs</span><b>offline · no API key</b></div>
     </div>
   </div>
-  <div class="exfoot">
-    <div class="key">
-      <span><i style="background:var(--ink)"></i>Matched rule</span>
-      <span><i style="background:var(--ask)"></i>Asks first</span>
-      <span><i style="background:var(--stop)"></i>Won't guess</span>
-    </div>
-    <span>Every answer here is real output of our classifier (<code>src/classify.py</code>), saved from an offline run.</span>
-  </div>
-</div>
-
-<section id="how">
-  <div class="sh2"><span class="n">01</span><h2>How it decides</h2></div>
-  <div class="pipe">
-    <div class="stage"><div class="disc"><svg class="i"><use href="#pin"/></svg></div><div><b>Pick a city</b><span>Separate data per city</span></div></div>
-    <div class="stage"><div class="disc"><svg class="i"><use href="#type"/></svg></div><div><b>Type or pick</b><span>中文 / English autocomplete</span></div></div>
-    <div class="stage"><div class="disc"><svg class="i"><use href="#rule"/></svg></div><div><b>Local rule decides</b><span>Exact match · offline</span></div></div>
-    <div class="stage ex"><div class="disc"><svg class="i"><use href="#spark"/></svg></div><div><b>AI rewords</b><span>Optional · facts locked</span></div></div>
-    <div class="stage"><div class="disc"><svg class="i"><use href="#card"/></svg></div><div><b>Bin + source</b><span>Prep steps · official link</span></div></div>
-  </div>
-  <div class="forks">
-    <span class="fork ask"><svg class="i"><use href="#q"/></svg>Material only → asks for the item</span>
-    <span class="fork ask"><svg class="i"><use href="#q"/></svg>Depends on condition → asks</span>
-    <span class="fork stop"><svg class="i"><use href="#x"/></svg>Not in this city → never borrows</span>
-    <span class="fork stop"><svg class="i"><use href="#x"/></svg>Prices, bookings, medical → refuses</span>
-  </div>
-  <div class="plegend"><span><i></i>Built by our team</span><span><i class="e"></i>Existing model (DeepSeek), off by default</span></div>
 </section>
 
-<section id="run">
-  <div class="sh2"><span class="n">02</span><h2>See it run</h2></div>
+<section class="sorter" aria-label="Interactive sorter">
+  <div class="picker" id="picker" role="toolbar" aria-label="Pick an item"></div>
+  <div class="stage" id="stage" aria-hidden="true"><span class="hint cap">Fig. 1 — pick an item above</span></div>
+  <div class="verdicts">
+    <div class="v" data-city="shanghai" aria-live="polite"></div>
+    <div class="v" data-city="hongkong" aria-live="polite"></div>
+  </div>
+  <div class="provenance">
+    <div class="legend cap"><span><i style="background:var(--ink)"></i>Rule matched</span><span><i style="background:var(--ask)"></i>Asks first</span><span><i style="background:var(--stop)"></i>Won't guess</span></div>
+    <span class="cap">Every answer above is saved output of our classifier, <span style="text-transform:none">src/classify.py</span></span>
+  </div>
+</section>
+
+<section class="sec" id="how">
+  <div class="sec-h"><span class="cap">01 / Method</span><h2 class="disp">How it decides</h2><p class="note">The decision is plain code that runs offline. The only AI step is optional, and it cannot change the decision.</p></div>
+  <div class="steps5">
+    <div class="st"><span class="n cap">Step 1</span><b>Pick a city</b><p>Each city has its own dataset. They never mix.</p></div>
+    <div class="st"><span class="n cap">Step 2</span><b>Name the item</b><p>Chinese or English, with autocomplete. Nothing is auto-submitted.</p></div>
+    <div class="st"><span class="n cap">Step 3</span><b>Rule decides</b><p>Exact match against reviewed names, plus condition tags.</p></div>
+    <div class="st model"><span class="n cap">Step 4 · optional</span><b>AI rewords</b><p>DeepSeek chooses between two pre-written wordings. The facts are locked.</p></div>
+    <div class="st"><span class="n cap">Step 5</span><b>Bin + source</b><p>Destination, preparation, caveat and a link to the official source.</p></div>
+  </div>
+  <div class="key2 cap"><span><i></i>Built by our team</span><span><i class="d"></i>Existing model, off by default</span></div>
+  <div class="exits">
+    <span class="cap">When it won't answer</span>
+    <ul>
+      <li><i style="background:var(--ask)"></i><span><b>Material only.</b> "plastic" → asks which item</span></li>
+      <li><i style="background:var(--ask)"></i><span><b>Depends on condition.</b> Rinsed or dirty? Local collection?</span></li>
+      <li><i style="background:var(--stop)"></i><span><b>Not in this city.</b> Never borrows the other city's rule</span></li>
+      <li><i style="background:var(--stop)"></i><span><b>Out of scope.</b> Prices, bookings, medical waste</span></li>
+    </ul>
+  </div>
+</section>
+
+<section class="sec" id="run">
+  <div class="sec-h"><span class="cap">02 / Evidence</span><h2 class="disp">See it run</h2><p class="note">The real app, captured at 3× resolution. No mock-ups.</p></div>
   <div class="viewer">
-    <div class="steps" role="tablist" id="steps"></div>
-    <div>
-      <div class="frame"><div class="bar"><i></i><i></i><i></i><code>localhost:8000 · --offline</code></div><picture><source id="shotDark" media="(prefers-color-scheme: dark)"><img id="shot" alt=""></picture></div>
-      <p class="proof">Screenshots of the real app at 3× resolution, 19 Nov 2026, no API key. The dark version uses Chrome's automatic dark mode.</p>
-    </div>
+    <div class="tabs" role="tablist" id="tabs"></div>
+    <figure class="shotbox" style="margin:0"><div class="bar cap"><span>localhost:8000</span><span>--offline</span></div>
+      <picture><source id="shotDark" media="(prefers-color-scheme: dark)"><img id="shot" alt=""></picture></figure>
+    <p class="proof cap">19 Nov 2026 · no API key · dark version via Chrome's automatic dark mode</p>
   </div>
 </section>
 
-<section id="try">
-  <div class="sh2"><span class="n">03</span><h2>Run it yourself</h2></div>
+<section class="sec" id="try">
+  <div class="sec-h"><span class="cap">03 / Reproduce</span><h2 class="disp">Run it yourself</h2><p class="note">Clone the repository, run the tests, then start the app. Nothing to install.</p></div>
   <div class="runs">
-    <div class="term"><div class="bar"><i></i><i></i><i></i></div>
-<pre><span class="p">$</span> git clone https://github.com/hryLiuYibo/AILT9019_Team11_Project.git
+<pre class="term"><span class="p">$</span> git clone https://github.com/hryLiuYibo/AILT9019_Team11_Project.git
 <span class="p">$</span> cd AILT9019_Team11_Project
 <span class="p">$</span> python tests/run_tests.py
-<span class="c">  checks: 55/55 passed</span>
+  checks: 55/55 passed
 <span class="ok">  result: ALL PASS</span>
 <span class="p">$</span> python src/app.py --offline
-<span class="c">  → open http://localhost:8000</span></pre></div>
-    <div class="reqs">
-      <div class="req"><svg class="i"><use href="#py"/></svg><b>Python 3.10+</b><span>Standard library only</span></div>
-      <div class="req"><svg class="i"><use href="#nokey"/></svg><b>No API key</b><span>AI wording is opt-in</span></div>
-      <div class="req"><svg class="i"><use href="#wifi"/></svg><b>Works offline</b><span>Rules ship with the code</span></div>
-      <div class="req"><svg class="i"><use href="#lib"/></svg><b>Repository</b><a href="https://github.com/hryLiuYibo/AILT9019_Team11_Project">hryLiuYibo/AILT9019_Team11_Project</a></div>
-    </div>
+  → http://localhost:8000</pre>
+    <dl class="spec">
+      <div><dt class="cap">Python</dt><dd>3.10 or newer, standard library only</dd></div>
+      <div><dt class="cap">API key</dt><dd>Not needed. AI wording is opt-in.</dd></div>
+      <div><dt class="cap">Network</dt><dd>Not needed. The rules ship with the code.</dd></div>
+      <div><dt class="cap">Repository</dt><dd><a href="https://github.com/hryLiuYibo/AILT9019_Team11_Project">hryLiuYibo/AILT9019_Team11_Project</a> <span class="cap">teaching team access</span></dd></div>
+    </dl>
   </div>
 </section>
 
-<section id="results">
-  <div class="sh2"><span class="n">04</span><h2>Results</h2></div>
-  <div class="stats">
-    <div class="stat"><div class="v">84<small>/84</small></div><div class="l">Shanghai test cases</div><div class="dotsrow" data-dots="84,84"></div></div>
-    <div class="stat"><div class="v">99<small>/99</small></div><div class="l">Hong Kong test cases</div><div class="dotsrow" data-dots="99,99"></div></div>
-    <div class="stat"><div class="v">19<small>/19</small></div><div class="l">Condition-tag cases</div><div class="dotsrow" data-dots="19,19"></div></div>
-    <div class="stat"><div class="v">0<small>/10</small></div><div class="l">Ambiguous inputs given a bin by mistake</div><div class="dotsrow" data-dots="0,10"></div></div>
+<section class="sec" id="results">
+  <div class="sec-h"><span class="cap">04 / Results</span><h2 class="disp">What we measured</h2><p class="note">Right city, right bin, right source for known items. For anything else, a question instead of a guess.</p></div>
+  <div class="nums">
+    <div class="num"><div class="big disp">84<small>/84</small></div><p>Shanghai test cases pass</p></div>
+    <div class="num"><div class="big disp">99<small>/99</small></div><p>Hong Kong test cases pass</p></div>
+    <div class="num"><div class="big disp">19<small>/19</small></div><p>Condition-tag cases, conflicts refused</p></div>
+    <div class="num"><div class="big disp">0<small>/10</small></div><p>Ambiguous inputs wrongly given a bin</p></div>
   </div>
-  <div class="recall">
-    <div class="rc"><div class="t">20 held-out phrasings · found by name or top-3 suggestions</div><div class="grid20" data-grid="10"></div><div class="v">10/20<small>per city</small></div></div>
-    <div class="rc"><div class="t">Same 20 · correct once the item is named</div><div class="grid20" data-grid="20"></div><div class="v">20/20<small>per city</small></div></div>
+  <div class="strips">
+    <div class="strip"><div class="lab"><span class="cap">Held-out phrasings · found by name or top-3 suggestion</span><b>10/20</b></div><div class="row" data-k="10"></div></div>
+    <div class="strip"><div class="lab"><span class="cap">Same phrasings · correct once the item is named</span><b>20/20</b></div><div class="row" data-k="20"></div></div>
   </div>
-  <p class="evi">From <code>tests/run_tests.py</code> and <code>tools/evaluate_recall.py</code>, offline, 13 Nov 2026. Held-out set never used for tuning. Optional AI wording: one live DeepSeek query passed, facts unchanged (smoke test only).</p>
+  <p class="evi cap" style="text-transform:none;letter-spacing:.01em">Per city; the held-out set was never used for tuning. Sources: tests/run_tests.py, tools/evaluate_recall.py, offline run, 13 Nov 2026. Optional AI wording: one live DeepSeek query passed with facts unchanged (a smoke test only).</p>
 </section>
 
-<section id="fails">
-  <div class="sh2"><span class="n">05</span><h2>Where it fails</h2></div>
-  <div class="fail">
-    <div class="chat">
-      <div class="bubble u"><small>Hong Kong</small>used PET bottle from the vending machine</div>
-      <div class="bubble a">✕ Not in the Hong Kong corpus. No Shanghai rule is borrowed.</div>
-      <div class="diag">
-        <b>Expected</b><span>Plastic recycling, brown bin</span>
-        <b>Cause</b><span>Exact matching only; no fuzzy search</span>
-        <b>Trade-off</b><span>Safer than a fuzzy match picking the wrong bin</span>
-        <b>Next</b><span>Fuzzy matches as suggestions only, retested on the held-out set</span>
-      </div>
+<section class="sec" id="fails">
+  <div class="sec-h"><span class="cap">05 / Limits</span><h2 class="disp">Where it fails</h2><p class="note">Free wording is the weak spot. We chose a safe miss over a confident wrong bin.</p></div>
+  <div class="fails">
+    <div class="ticket">
+      <div class="row"><span class="cap">Input</span><span class="in">Hong Kong — used PET bottle from the vending machine</span></div>
+      <div class="row"><span class="cap">Output</span><span class="out">✕ Not in the Hong Kong corpus. No Shanghai rule is borrowed.</span></div>
+      <div class="row"><span class="cap">Expected</span><span>Plastic recycling, brown bin</span></div>
+      <div class="row"><span class="cap">Cause</span><span>Exact matching only; no fuzzy or semantic search</span></div>
+      <div class="row"><span class="cap">Next</span><span>Fuzzy matches offered as suggestions only, retested on the same held-out set</span></div>
     </div>
     <div class="lims">
-      <div class="lim"><svg class="i"><use href="#db"/></svg><b>113</b>items in total. Hong Kong food waste is not covered yet.</div>
-      <div class="lim"><svg class="i"><use href="#cal"/></svg><b>13 Nov</b>Rules checked on this date. On-site signs come first.</div>
-      <div class="lim"><svg class="i"><use href="#cam"/></svg><b>0</b>real photos tested, so no photo accuracy is claimed.</div>
-      <div class="lim"><svg class="i"><use href="#users"/></svg><b>0</b>user studies so far.</div>
+      <div class="lim"><span class="big disp">113</span><p>items in total. Hong Kong food waste is not covered yet.</p></div>
+      <div class="lim"><span class="big disp">13.11</span><p>Rules were checked on this date and may change. Signs at the bin come first.</p></div>
+      <div class="lim"><span class="big disp">0</span><p>real photos tested, so no photo accuracy is claimed.</p></div>
+      <div class="lim"><span class="big disp">0</span><p>user studies so far.</p></div>
     </div>
   </div>
 </section>
 
-<section id="team">
-  <div class="sh2"><span class="n">06</span><h2>Team 11</h2></div>
+<section class="sec" id="team">
+  <div class="sec-h"><span class="cap">06 / Team</span><h2 class="disp">Team 11</h2></div>
   <div class="team">
-    <div class="mem"><i style="--c:#173B6B">LY</i>LIU Yibo</div>
-    <div class="mem"><i style="--c:#c4402f">LS</i>LU Song Lun</div>
-    <div class="mem"><i style="--c:#79523b">WS</i>WEN Sum Yee</div>
-    <div class="mem"><i style="--c:#9a7a14">WZ</i>WANG Zixuan</div>
+    <div class="mem disp"><i style="background:#173B6B"></i>Liu<br>Yibo</div>
+    <div class="mem disp"><i style="background:#E94531"></i>Lu<br>Song Lun</div>
+    <div class="mem disp"><i style="background:#79523b"></i>Wen<br>Sum Yee</div>
+    <div class="mem disp"><i style="background:#bc931a"></i>Wang<br>Zixuan</div>
+  </div>
+  <div class="colophon">
+    <div><span class="cap">Course</span>AILT9019 AI Literacy for Computing and Data Science, The University of Hong Kong, 2026. Course prototype, not official disposal advice.</div>
+    <div><span class="cap">Sources</span><a href="https://lhsr.sh.gov.cn/srgl/20240806/40b9feaa-53db-472f-8a6b-2c3cf0465def.html">Shanghai Household Waste Sorting Guidelines (2024)</a><br><a href="https://www.wastereduction.gov.hk/en-hk/recycling-faq/greencommunity-faq">HK EPD GREEN@COMMUNITY FAQ</a></div>
+    <div><span class="cap">Set in</span>Archivo and JetBrains Mono (SIL Open Font License). Animation by PixiJS (MIT).</div>
   </div>
 </section>
 
 </main>
 
-<footer>AILT9019 AI Literacy for Computing and Data Science · The University of Hong Kong · 2026 · Course prototype, not official disposal advice.
-  Sources: <a href="https://lhsr.sh.gov.cn/srgl/20240806/40b9feaa-53db-472f-8a6b-2c3cf0465def.html">Shanghai 2024 Guidelines</a> · <a href="https://www.wastereduction.gov.hk/en-hk/recycling-faq/greencommunity-faq">HK EPD GREEN@COMMUNITY FAQ</a></footer>
-
+<script>window.DATA = /*DATA*/;</script>
+<script src="vendor/pixi.min.js" defer></script>
 <script>
-const DATA = /*DATA*/;
+(() => {
+const DATA = window.DATA;
+const CITIES = ["shanghai","hongkong"];
+const CNAME = {shanghai:"Shanghai", hongkong:"Hong Kong"};
 const BINS = {
-  shanghai:[["REC","Recyclable","#173B6B"],["HAZ","Hazardous","#E94531"],["WET","Wet","#6A483F"],["DRY","Dry","#2C2B28",1]],
-  hongkong:[["PAPER","Paper","#2462a3"],["METAL","Metal","#bc931a"],["PLASTIC","Plastic","#79523b"],["GC","GREEN@ COMMUNITY","#4f8a5b"],["GENERAL","General","#6e6e6e"]]
+  shanghai:[["REC","Recyclable","#173B6B"],["HAZ","Hazardous","#E94531"],["WET","Wet","#6A483F"],["DRY","Dry","#2C2B28"]],
+  hongkong:[["PAPER","Paper","#2462a3"],["METAL","Metal","#bc931a"],["PLASTIC","Plastic","#79523b"],["GC","Green@Comm.","#4f8a5b"],["GENERAL","General","#6e6e6e"]]
 };
 const GC = ["GLASS","CARTON","FOAM","BATTERY","LAMP"];
-const LABEL = {"plastic drink bottle":"Plastic bottle","newspaper":"Newspaper","cardboard box":"Cardboard box","rechargeable battery":"Battery","fluorescent tube":"Fluorescent tube","milk carton":"Milk carton","styrofoam":"Styrofoam","fruit peel":"Fruit peel","plastic":"just \"plastic\""};
-const $ = (s,el=document)=>el.querySelector(s);
-const esc = s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const binKey = code => GC.includes(code) ? "GC" : code;
+const binColor = (city, code) => (BINS[city].find(b => b[0] === binKey(code)) || [,,"#888"])[2];
+const LABEL = {"plastic drink bottle":"Plastic bottle","newspaper":"Newspaper","cardboard box":"Cardboard box","rechargeable battery":"Battery","fluorescent tube":"Fluorescent tube","milk carton":"Milk carton","styrofoam":"Styrofoam","fruit peel":"Fruit peel","plastic":"just “plastic”"};
+const $ = (s, el = document) => el.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const kind = r => r.s === "matched" ? "hit" : (r.s === "needs_condition" || r.s === "needs_item") ? "ask" : "stop";
 
-for (const city of ["shanghai","hongkong"]) {
-  $(`.city[data-city=${city}] [data-bins]`).innerHTML = BINS[city].map(([k,n,c,d])=>
-    `<div class="bin${d?" dark":""}" data-k="${k}" style="--c:${c}"><div class="can"></div><small>${n}</small></div>`).join("");
-}
-const picker = $("#picker");
-picker.innerHTML = DATA.map((r,i)=>`<button class="chip${r.icon==="material"?" mat":""}" data-i="${i}" aria-pressed="false"><svg class="i"><use href="#${r.icon}"/></svg>${LABEL[r.q]||r.q}</button>`).join("");
+/* ---------- DOM verdicts (always present; the canvas is decoration) ---------- */
+const state = { item: 0, sel: { shanghai: null, hongkong: null } };
+const current = city => { const b = DATA[state.item][city]; const s = state.sel[city]; return s == null ? b : b.opts[s].r; };
 
-function render(city, r){
-  const box = $(`.city[data-city=${city}]`), bins = $("[data-bins]",box), v = $("[data-verdict]",box);
-  bins.classList.remove("has-hit","none"); bins.querySelectorAll(".bin").forEach(b=>b.classList.remove("hit"));
-  v.className = "verdict"; v.style.removeProperty("--c");
-  if (r.s === "matched") {
-    const k = GC.includes(r.code) ? "GC" : r.code;
-    const b = bins.querySelector(`[data-k="${k}"]`);
-    if (b) { b.classList.add("hit"); bins.classList.add("has-hit"); v.style.setProperty("--c", getComputedStyle(b).getPropertyValue("--c")); }
-    v.innerHTML = `<div class="head"><i></i>${esc(r.cat)}</div>
-      <div class="prep"><svg class="i"><use href="#hand"/></svg><span>${esc(r.prep)}</span></div>
-      <div class="src"><svg class="i"><use href="#link"/></svg>${r.url?`<a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.src)}</a>`:esc(r.src)}</div>`;
+function renderVerdict(city) {
+  const el = $(`.v[data-city=${city}]`), base = DATA[state.item][city], r = current(city);
+  let h = `<h3 class="city disp">${CNAME[city]}</h3>`;
+  if (kind(r) === "hit") {
+    h += `<div class="cat" style="--c:${binColor(city, r.code)}"><i></i><span>${esc(r.cat)}</span></div>
+          <p class="prep">${esc(r.prep)}</p>
+          <a class="src mono" href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.src)} ↗</a>`;
   } else {
-    bins.classList.add("none");
-    const ask = r.s === "needs_condition" || r.s === "needs_item";
-    v.classList.add(ask ? "ask" : "stop");
-    v.innerHTML = `<div class="head">${ask?"? Asks before deciding":"✕ Won't guess"}</div><div class="msg">${esc(r.msg)}</div>`;
+    const ask = kind(r) === "ask";
+    h += `<span class="flag ${ask ? "ask" : "stop"}">${ask ? "Asks first" : "Won't guess"}</span><p class="msg">${esc(r.msg)}</p>`;
   }
+  if (base.opts) h += `<div class="opts">${base.opts.map((o, j) => `<button class="opt" data-city="${city}" data-j="${j}" aria-pressed="${state.sel[city] === j}">${esc(o.label)}</button>`).join("")}</div>`;
+  el.innerHTML = h;
 }
-function cityView(city, base, sel){
-  render(city, sel == null ? base : base.opts[sel].r);
-  if (!base.opts) return;
-  const o = document.createElement("div"); o.className = "opts";
-  base.opts.forEach((op,j)=>{
-    const b = document.createElement("button"); b.className = "opt"; b.textContent = op.label;
-    b.setAttribute("aria-pressed", j === sel);
-    b.onclick = ()=> cityView(city, base, j === sel ? null : j);
-    o.appendChild(b);
+
+const picker = $("#picker");
+picker.innerHTML = DATA.map((r, i) => `<button class="pick${r.icon === "material" ? " mat" : ""}" data-i="${i}" aria-pressed="false">${LABEL[r.q] || r.q}</button>`).join("");
+
+function choose(i, fromUser) {
+  state.item = i; state.sel = { shanghai: null, hongkong: null };
+  picker.querySelectorAll(".pick").forEach(b => b.setAttribute("aria-pressed", b.dataset.i == i));
+  CITIES.forEach(renderVerdict);
+  if (fromUser) stopAuto();
+  sorter && sorter.play(i);
+}
+picker.addEventListener("click", e => { const b = e.target.closest(".pick"); if (b) choose(+b.dataset.i, true); });
+document.addEventListener("click", e => {
+  const b = e.target.closest(".opt"); if (!b) return;
+  const city = b.dataset.city, j = +b.dataset.j;
+  state.sel[city] = state.sel[city] === j ? null : j;
+  renderVerdict(city); stopAuto();
+  sorter && sorter.replayCity(city, current(city));
+});
+
+/* ---------- auto-cycle while the sorter is on screen ---------- */
+let autoTimer = null, auto = !reduced, onScreen = false;
+function stopAuto(){ auto = false; clearInterval(autoTimer); }
+function tickAuto(){ if (auto && onScreen && !document.hidden) choose((state.item + 1) % DATA.length, false); }
+new IntersectionObserver(es => { onScreen = es[0].isIntersecting; }, { threshold: .35 }).observe($("#stage"));
+if (auto) autoTimer = setInterval(tickAuto, 4200);
+
+/* ---------- PixiJS sorter ---------- */
+let sorter = null;
+choose(0, false);
+
+window.addEventListener("DOMContentLoaded", async () => {
+  if (!window.PIXI) return;
+  try { sorter = await makeSorter($("#stage")); sorter.play(state.item, true); }
+  catch (e) { console.warn("sorter disabled:", e); }
+});
+
+async function makeSorter(host) {
+  const P = window.PIXI;
+  const app = new P.Application();
+  await app.init({ resizeTo: host, antialias: true, backgroundAlpha: 0, resolution: Math.min(devicePixelRatio || 1, 2), autoDensity: true });
+  host.prepend(app.canvas);
+  try { await document.fonts.load('11px "JB Mono"'); } catch {}
+
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  let C = {};
+  const readColors = () => { C = { ink: css("--ink"), ink2: css("--ink2"), mute: css("--mute"), hair: css("--hair"), paper: css("--paper"), ask: css("--ask"), stop: css("--stop") }; };
+
+  const tweens = [];
+  const tween = (dur, upd, done) => { const t = { t: 0, dur: reduced ? 1 : dur, upd, done }; tweens.push(t); return t; };
+  const parts = [];
+  let last = performance.now();
+  app.ticker.add(() => {
+    const now = performance.now(), dt = Math.min(1000, now - last); last = now;
+    for (let i = tweens.length - 1; i >= 0; i--) { const t = tweens[i]; t.t += dt; const p = Math.min(1, t.t / t.dur); t.upd(p); if (p >= 1) { tweens.splice(i, 1); t.done && t.done(); } }
+    for (let i = parts.length - 1; i >= 0; i--) { const q = parts[i]; q.life -= dt; q.vy += 0.0016 * dt; q.g.x += q.vx * dt; q.g.y += q.vy * dt; q.g.rotation += q.vr * dt; q.g.alpha = Math.max(0, q.life / q.max); if (q.life <= 0) { q.g.destroy(); parts.splice(i, 1); } }
+    pulse.forEach(p => { p.ph += dt / 600; p.ring.scale.set(1 + 0.12 * Math.sin(p.ph * Math.PI * 2)); p.ring.alpha = 0.6 + 0.4 * Math.sin(p.ph * Math.PI * 2); });
   });
-  $(`.city[data-city=${city}] [data-verdict]`).appendChild(o);
-}
-function show(i){
-  picker.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed", c.dataset.i==i));
-  for (const city of ["shanghai","hongkong"]) cityView(city, DATA[i][city], null);
-}
-picker.addEventListener("click", e=>{ const c=e.target.closest(".chip"); if(c) show(+c.dataset.i); });
-show(0);
+  const ease = { io: p => p < .5 ? 4*p*p*p : 1 - Math.pow(-2*p + 2, 3)/2, in: p => p*p, out: p => 1 - (1-p)*(1-p), back: p => 1 + 2.2*Math.pow(p-1,3) + 1.2*Math.pow(p-1,2) };
+  const quad = (a, c, b, t) => ({ x: (1-t)*(1-t)*a.x + 2*(1-t)*t*c.x + t*t*b.x, y: (1-t)*(1-t)*a.y + 2*(1-t)*t*c.y + t*t*b.y });
 
-/* screenshot steps */
+  let L, layer, trails, bins = {}, tokens = {}, pulse = [];
+
+  function layout() {
+    const w = host.clientWidth, h = host.clientHeight, side = w >= 760;
+    const chute = { x: w/2, y: 40 }, split = { x: w/2, y: side ? 130 : 112 };
+    const regions = side
+      ? { shanghai: { x0: 0, x1: w/2 - 28, base: h - 70 }, hongkong: { x0: w/2 + 28, x1: w, base: h - 70 } }
+      : { shanghai: { x0: 0, x1: w, base: h * 0.52 }, hongkong: { x0: 0, x1: w, base: h - 56 } };
+    return { w, h, side, chute, split, regions };
+  }
+
+  function txt(s, size, color, extra = {}) { return new P.Text({ text: s, style: { fontFamily: '"JB Mono", ui-monospace, monospace', fontSize: size, fill: color, letterSpacing: 1.2, ...extra } }); }
+
+  function build() {
+    readColors();
+    app.stage.removeChildren().forEach(c => c.destroy({ children: true }));
+    tweens.length = 0; parts.length = 0; pulse = []; tokens = {};
+    L = layout();
+    const deco = new P.Graphics(); app.stage.addChild(deco);
+    // chute
+    deco.moveTo(L.chute.x - 34, 8).lineTo(L.chute.x - 12, L.chute.y).lineTo(L.chute.x + 12, L.chute.y).lineTo(L.chute.x + 34, 8).stroke({ width: 1.5, color: C.ink });
+    // divider / ground lines
+    if (L.side) {
+      for (let y = L.split.y + 20; y < L.h - 8; y += 9) deco.moveTo(L.w/2, y).lineTo(L.w/2, y + 4);
+      deco.stroke({ width: 1, color: C.mute });
+    }
+    trails = new P.Graphics(); app.stage.addChild(trails);
+    layer = new P.Container(); app.stage.addChild(layer);
+    CITIES.forEach(city => {
+      const R = L.regions[city], set = BINS[city], n = set.length, span = R.x1 - R.x0;
+      const uslot = Math.min(span / 5, 120), slot = Math.min(span / n, uslot * 1.25), bw = Math.max(26, Math.min(64, uslot * 0.6)), bh = bw * 1.18;
+      const startX = R.x0 + (span - slot * n) / 2 + slot / 2;
+      const lab = txt(CNAME[city].toUpperCase(), 11, C.mute); lab.x = R.x0 + (L.side ? 0 : 0); lab.y = R.base - bh - (L.side ? 120 : 92); layer.addChild(lab);
+      deco.moveTo(R.x0, R.base + 0.5).lineTo(R.x1, R.base + 0.5).stroke({ width: 1.5, color: C.ink });
+      bins[city] = set.map(([k, name, col], i) => {
+        const c = new P.Container(); c.x = startX + i * slot; c.y = R.base; layer.addChild(c);
+        const body = new P.Graphics(); body.rect(-bw/2, -bh, bw, bh).fill(col);
+        body.rect(-bw*0.2, -bh*0.72, bw*0.4, 2.5).fill({ color: 0xffffff, alpha: .55 });
+        if (k === "DRY" || k === "GENERAL") body.rect(-bw/2, -bh, bw, bh).stroke({ width: 1, color: C.hair, alignment: 1 });
+        c.addChild(body);
+        const lid = new P.Container(); lid.x = -bw/2 - 3; lid.y = -bh - 1; c.addChild(lid);
+        const lg = new P.Graphics(); lg.rect(0, -6, bw + 6, 6).fill(col); lg.rect(0, -6, bw + 6, 6).fill({ color: 0xffffff, alpha: .18 }); lid.addChild(lg);
+        const t = txt(name.toUpperCase(), Math.max(8, Math.min(10, bw / 6)), C.ink2 || C.ink); t.anchor.set(.5, 0); t.y = 10; c.addChild(t);
+        return { k, col, c, lid, bw, bh, label: t };
+      });
+    });
+  }
+
+  function makeToken(label) {
+    const c = new P.Container();
+    const t = txt(label.toUpperCase(), 11, C.paper, { fontWeight: "500" }); t.anchor.set(.5);
+    const g = new P.Graphics(); const w = t.width + 18, h = 24; g.rect(-w/2, -h/2, w, h).fill(C.ink);
+    c.addChild(g, t); c.w = w; layer.addChild(c); return c;
+  }
+
+  function dimBins(city, keep) {
+    bins[city].forEach(b => { const a0 = b.c.alpha, a1 = keep == null ? 0.22 : (b.k === keep ? 1 : 0.22); tween(300, p => b.c.alpha = a0 + (a1 - a0) * p); });
+  }
+  function resetBins() { CITIES.forEach(city => bins[city].forEach(b => { b.c.alpha = 1; b.lid.rotation = 0; b.c.scale.set(1); })); }
+
+  function burst(x, y, col) {
+    if (reduced) return;
+    for (let i = 0; i < 16; i++) { const g = new P.Graphics(); const s = 3 + Math.random()*4; g.rect(-s/2, -s/2, s, s).fill(col); g.x = x; g.y = y; layer.addChild(g);
+      const a = -Math.PI/2 + (Math.random() - .5) * 2.2, v = .12 + Math.random() * .22; parts.push({ g, vx: Math.cos(a) * v, vy: Math.sin(a) * v, vr: (Math.random()-.5) * .02, life: 700 + Math.random()*300, max: 1000 }); }
+  }
+
+  function hover(city) { const R = L.regions[city], bh = bins[city][0].bh; return { x: (R.x0 + R.x1) / 2, y: R.base - bh - (L.side ? 66 : 46) }; }
+
+  function sendTo(city, tok, from, r) {
+    pulse = pulse.filter(p => { if (p.city === city) { p.ring.destroy(); return false; } return true; });
+    const k = kind(r);
+    if (k === "hit") {
+      const b = bins[city].find(b => b.k === binKey(r.code));
+      const to = { x: b.c.x, y: b.c.y - b.bh - 16 };
+      const ctrl = { x: to.x, y: from.y + (L.side ? 10 : 0) };
+      trails.moveTo(from.x, from.y);
+      for (let i = 1; i <= 24; i++) { const q = quad(from, ctrl, to, i/24); if (i % 2) trails.lineTo(q.x, q.y); else trails.moveTo(q.x, q.y); }
+      trails.stroke({ width: 1.5, color: b.col, alpha: .8 });
+      dimBins(city, b.k);
+      tween(720, p => { const q = quad(from, ctrl, to, ease.io(p)); tok.x = q.x; tok.y = q.y; if (p > .7) b.lid.rotation = -1.1 * Math.min(1, (p - .7) / .3); }, () => {
+        tween(180, p => { tok.y = to.y + 22 * ease.in(p); tok.scale.set(1 - .7 * p); tok.alpha = 1 - p; }, () => {
+          tok.destroy(); burst(b.c.x, b.c.y - b.bh, b.col);
+          tween(420, p => b.lid.rotation = -1.1 * (1 - ease.back(p)));
+          tween(300, p => b.c.scale.set(1, 1 - .08 * Math.sin(p * Math.PI)));
+        });
+      });
+    } else {
+      const to = hover(city), ctrl = { x: to.x, y: from.y };
+      dimBins(city, null);
+      tween(640, p => { const q = quad(from, ctrl, to, ease.io(p)); tok.x = q.x; tok.y = q.y; }, () => {
+        const col = k === "ask" ? C.ask : C.stop;
+        const ring = new P.Graphics(); ring.rect(-tok.w/2 - 7, -19, tok.w + 14, 38).stroke({ width: 1.5, color: col }); ring.x = tok.x; ring.y = tok.y; layer.addChildAt(ring, 0);
+        const mark = txt(k === "ask" ? "?" : "×", 22, col, { fontWeight: "500" }); mark.anchor.set(.5); mark.y = -38; ring.addChild(mark);
+        if (k === "ask") pulse.push({ city, ring, ph: 0 });
+        else { const x0 = tok.x; tween(380, p => { tok.x = x0 + Math.sin(p * Math.PI * 6) * 6 * (1 - p); }, () => tween(500, p => { tok.alpha = 1 - p * .75; })); pulse.push({ city, ring, ph: .25 }); }
+      });
+    }
+  }
+
+  function play(i) {
+    if (!L) build();
+    tweens.length = 0; trails.clear();
+    Object.values(tokens).forEach(t => t && !t.destroyed && t.destroy({ children: true }));
+    pulse.forEach(p => p.ring.destroy()); pulse = []; tokens = {};
+    resetBins();
+    const row = DATA[i], label = LABEL[row.q] || row.q;
+    const tok = makeToken(label); tok.x = L.chute.x; tok.y = -20;
+    tween(380, p => { tok.y = -20 + (L.split.y + 20) * ease.in(p); }, () => {
+      const pair = CITIES.map(city => { const t = city === "shanghai" ? tok : makeToken(label); t.x = L.split.x; t.y = L.split.y; tokens[city] = t; return t; });
+      CITIES.forEach((city, j) => sendTo(city, pair[j], { x: L.split.x, y: L.split.y }, current(city)));
+    });
+  }
+  function replayCity(city, r) {
+    if (!L) return;
+    const old = tokens[city];
+    const from = old && !old.destroyed ? { x: old.x, y: old.y } : hover(city);
+    if (old && !old.destroyed) old.destroy({ children: true });
+    const t = makeToken(LABEL[DATA[state.item].q] || DATA[state.item].q); t.x = from.x; t.y = from.y; tokens[city] = t;
+    bins[city].forEach(b => { b.lid.rotation = 0; b.c.alpha = 1; });
+    sendTo(city, t, from, r);
+  }
+
+  let rz; new ResizeObserver(() => { clearTimeout(rz); rz = setTimeout(() => { build(); play(state.item); }, 120); }).observe(host);
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { build(); play(state.item); });
+  build();
+  return { play, replayCity };
+}
+
+/* ---------- screenshots ---------- */
 const SHOTS = [
-  ["shanghai_bottle","Shanghai · plastic bottle","Recyclable, blue bin","Shanghai result for plastic bottle: Recyclable Waste, blue bin, with preparation and source"],
-  ["hongkong_bottle","Hong Kong · same input","Plastic, brown bin","Hong Kong result for plastic bottle: plastic recycling, brown bin, with caveat and EPD FAQ Q6 source"],
-  ["autocomplete","Type 膠","Bilingual suggestions","Typing 膠 lists six bilingual item suggestions"],
-  ["material_only","Type \"plastic\"","Asks for the item","Input plastic returns a follow-up question instead of a category"]
+  ["shanghai_bottle","Shanghai — plastic bottle","Recyclable, blue bin","Shanghai result for plastic bottle: Recyclable Waste, blue bin, with preparation and source"],
+  ["hongkong_bottle","Hong Kong — same input","Plastic, brown bin","Hong Kong result for plastic bottle: plastic recycling, brown bin, with caveat and EPD FAQ Q6 source"],
+  ["autocomplete","Typing 膠","Bilingual suggestions","Typing 膠 lists six bilingual item suggestions"],
+  ["material_only","Typing “plastic”","Asks for the item","Input plastic returns a follow-up question instead of a category"]
 ];
-const steps = $("#steps"), shot = $("#shot"), shotDark = $("#shotDark");
-const dark = matchMedia("(prefers-color-scheme: dark)");
-steps.innerHTML = SHOTS.map((s,i)=>`<button class="stepbtn" role="tab" data-i="${i}" aria-selected="false"><span class="k">${i+1}</span><span>${esc(s[1])}<em>${esc(s[2])}</em></span></button>`).join("");
-function step(i){ steps.querySelectorAll(".stepbtn").forEach(b=>b.setAttribute("aria-selected", b.dataset.i==i));
-  shotDark.srcset = `img/${SHOTS[i][0]}_dark.png`; shot.src = `img/${SHOTS[i][0]}.png`; shot.alt = SHOTS[i][3]; }
-steps.addEventListener("click", e=>{ const b=e.target.closest(".stepbtn"); if(b) step(+b.dataset.i); });
-SHOTS.forEach(s=>{ const im=new Image(); im.src=`img/${s[0]}${dark.matches?"_dark":""}.png`; });
-step(0);
+const tabs = $("#tabs"), shot = $("#shot"), shotDark = $("#shotDark");
+tabs.innerHTML = SHOTS.map((s, i) => `<button class="tab" role="tab" data-i="${i}" aria-selected="false"><span class="n mono">${String(i+1).padStart(2,"0")}</span><span>${esc(s[1])}<em>${esc(s[2])}</em></span></button>`).join("");
+function showShot(i){ tabs.querySelectorAll(".tab").forEach(b => b.setAttribute("aria-selected", b.dataset.i == i)); shotDark.srcset = `img/${SHOTS[i][0]}_dark.png`; shot.src = `img/${SHOTS[i][0]}.png`; shot.alt = SHOTS[i][3]; }
+tabs.addEventListener("click", e => { const b = e.target.closest(".tab"); if (b) showShot(+b.dataset.i); });
+showShot(0);
 
-/* result glyphs */
-document.querySelectorAll("[data-dots]").forEach(el=>{ const [ok,n]=el.dataset.dots.split(",").map(Number); const bad=el.closest(".stat").querySelector(".v").textContent.startsWith("0");
-  el.innerHTML = Array.from({length:n},(_,i)=> bad ? '<i class="x"></i>' : `<i${i<ok?"":' class="x"'}></i>`).join(""); });
-document.querySelectorAll("[data-grid]").forEach(el=>{ const k=+el.dataset.grid; el.innerHTML = Array.from({length:20},(_,i)=>`<i${i<k?"":' class="x"'}></i>`).join(""); });
+/* ---------- result strips ---------- */
+document.querySelectorAll(".strip .row").forEach(el => { const k = +el.dataset.k; el.innerHTML = Array.from({ length: 20 }, (_, i) => `<i${i < k ? "" : ' class="x"'}></i>`).join(""); });
+})();
 </script>
 </body>
 </html>

@@ -6,7 +6,7 @@
    (hryLiuYibo/AILT9019_Team11_Project) so every answer is real classifier output:
    `python path/to/gen_explorer.py > path/to/explorer.json`
 2. `python build.py page.src.html explorer.json ../index.html`
-3. Upload `index.html` + `img/` (zip with forward-slash paths) to the Cloudflare Pages project `ailt9019-team11`.
+3. Upload `index.html` + `img/` + `fonts/` + `vendor/` (zip with forward-slash paths) to the Cloudflare Pages project `ailt9019-team11`.
 
 ## Screenshots (img/*.png, img/*_dark.png)
 
