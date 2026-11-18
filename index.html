@@ -4,296 +4,414 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Waste Sorting Helper · Team 11</title>
-<meta name="description" content="A bilingual waste-sorting helper for Shanghai and Hong Kong where local, sourced rules decide the bin. AILT9019 Team 11 final project.">
+<meta name="description" content="A bilingual waste-sorting helper for Shanghai and Hong Kong where sourced local rules decide the bin. AILT9019 Team 11 final project.">
 <style>
 :root{
-  --bg:#f7f7f4; --surface:#ffffff; --ink:#1d2321; --muted:#5b6662; --line:#e2e4df;
-  --accent:#2f6b4f; --accent-soft:#e6f0ea;
-  --sh:#1f4e8c; --hk:#7a5034; --warn:#9a5b12; --warn-soft:#fbf1e2;
-  --code:#eef0ec;
+  --bg:#f6f6f3; --surface:#ffffff; --surface2:#f0f1ed; --ink:#1b2120; --ink2:#47524e; --muted:#6c7773; --line:#e1e3de;
+  --accent:#2c6a4d; --accent-ink:#ffffff; --accent-soft:#e3efe8;
+  --ask:#a0600f; --ask-soft:#fbf0df; --stop:#a33a32; --stop-soft:#f8e6e3;
+  --team:#2c6a4d; --exist:#6c7773;
+  /* real bin colours */
+  --sh-rec:#1f5aa6; --sh-haz:#c8352b; --sh-wet:#6b4a2e; --sh-dry:#2a2a2a;
+  --hk-blue:#1f6fbf; --hk-yellow:#e2b012; --hk-brown:#7a5034; --hk-green:#3c8a3f;
+  --term:#16201c; --term-ink:#d9e6df; --term-dim:#86a094;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#141816; --surface:#1c211f; --ink:#e7ebe8; --muted:#9aa5a0; --line:#2c3330;
-    --accent:#7cc39c; --accent-soft:#1f2e26;
-    --sh:#7ea6e0; --hk:#d1a07e; --warn:#e3a95c; --warn-soft:#2c2418;
-    --code:#242a27;
+    --bg:#121614; --surface:#1a1f1d; --surface2:#222826; --ink:#e8ece9; --ink2:#bfc8c4; --muted:#93a09a; --line:#2c3431;
+    --accent:#77c29a; --accent-ink:#0f1a14; --accent-soft:#1d2c24;
+    --ask:#e6ab5d; --ask-soft:#2c2417; --stop:#ec8a80; --stop-soft:#2e1d1b;
+    --team:#77c29a; --exist:#93a09a;
+    --sh-dry:#5a5a5a;
+    --term:#0c110f;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#141816; --surface:#1c211f; --ink:#e7ebe8; --muted:#9aa5a0; --line:#2c3330;
-  --accent:#7cc39c; --accent-soft:#1f2e26;
-  --sh:#7ea6e0; --hk:#d1a07e; --warn:#e3a95c; --warn-soft:#2c2418;
-  --code:#242a27;
+  --bg:#121614; --surface:#1a1f1d; --surface2:#222826; --ink:#e8ece9; --ink2:#bfc8c4; --muted:#93a09a; --line:#2c3431;
+  --accent:#77c29a; --accent-ink:#0f1a14; --accent-soft:#1d2c24;
+  --ask:#e6ab5d; --ask-soft:#2c2417; --stop:#ec8a80; --stop-soft:#2e1d1b;
+  --team:#77c29a; --exist:#93a09a;
+  --sh-dry:#5a5a5a;
+  --term:#0c110f;
 }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;scroll-padding-top:56px}
 body{margin:0;background:var(--bg);color:var(--ink);
-  font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif}
+  font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif}
 a{color:var(--accent)}
-.wrap{max-width:960px;margin:0 auto;padding:0 16px}
-nav{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 92%,transparent);
-  backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
-nav .wrap{display:flex;gap:18px;overflow-x:auto;white-space:nowrap;padding-top:10px;padding-bottom:10px;font-size:14px}
+.wrap{max-width:1000px;margin:0 auto;padding:0 16px}
+code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.9em}
+
+/* nav */
+nav{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;gap:18px;height:48px;overflow-x:auto;white-space:nowrap;font-size:14px}
+nav b{font-size:14px;margin-right:6px}
 nav a{color:var(--muted);text-decoration:none}
 nav a:hover{color:var(--ink)}
-header{padding:56px 0 28px}
-.eyebrow{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
-h1{font-size:clamp(28px,5vw,42px);line-height:1.15;margin:0 0 6px}
-.zh{color:var(--muted);font-size:18px;margin:0 0 18px}
-.lede{font-size:18px;max-width:720px;margin:0 0 22px}
+
+/* hero */
+.hero{padding:44px 0 36px;display:grid;grid-template-columns:1.05fr 1fr;gap:36px;align-items:center}
+.eyebrow{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+h1{font-size:clamp(28px,4.6vw,42px);line-height:1.12;margin:0 0 6px}
+.zh{color:var(--muted);font-size:18px;margin:0 0 16px}
+.lede{font-size:18px;color:var(--ink2);margin:0 0 22px}
+.lede b{color:var(--ink)}
 .btns{display:flex;flex-wrap:wrap;gap:10px}
-.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:8px;
-  border:1px solid var(--line);background:var(--surface);color:var(--ink);text-decoration:none;font-size:15px}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--bg)}
-.btn small{color:inherit;opacity:.75}
-section{padding:36px 0;border-top:1px solid var(--line)}
-h2{font-size:24px;margin:0 0 14px}
-h3{font-size:17px;margin:22px 0 8px}
-p{margin:0 0 12px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:9px;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink);text-decoration:none;font-weight:600;font-size:15px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn[aria-disabled="true"]{opacity:.55;pointer-events:none}
+.btn small{font-weight:400;opacity:.8}
+
+/* same item, two cities */
+.duel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+.query{display:flex;align-items:center;gap:10px;background:var(--surface2);border-radius:9px;padding:10px 12px;font-weight:600}
+.query .ico{font-size:20px}
+.fork{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.res{border:1px solid var(--line);border-radius:10px;padding:12px}
+.res .city{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.res .bin{display:flex;align-items:center;gap:10px;margin:8px 0 6px}
+.sw{width:30px;height:30px;border-radius:7px;flex:none}
+.res .bin b{display:block;line-height:1.2}
+.res .bin span{font-size:13px;color:var(--muted)}
+.res .src{font-size:12px;color:var(--muted)}
+.duel-note{font-size:13px;color:var(--muted);margin:10px 2px 0}
+
+/* sections */
+section{padding:40px 0;border-top:1px solid var(--line)}
+.sh{display:flex;align-items:baseline;gap:12px;margin:0 0 18px}
+.sh .num{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+h2{font-size:24px;margin:0}
+h3{font-size:16px;margin:0 0 8px}
 .muted{color:var(--muted)}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
-.card h3{margin-top:0}
-ul{margin:0 0 12px;padding-left:20px}
-li{margin:3px 0}
-.flow{display:flex;flex-direction:column;gap:0;margin:8px 0 6px}
-.step{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start;background:var(--surface);
-  border:1px solid var(--line);border-radius:10px;padding:12px 14px}
-.step .n{width:28px;height:28px;border-radius:50%;background:var(--accent-soft);color:var(--accent);
-  display:grid;place-items:center;font-weight:700;font-size:14px}
-.step b{display:block}
-.step .side{color:var(--warn);font-size:14px;margin-top:4px}
-.arrow{height:16px;margin-left:28px;border-left:2px solid var(--line)}
-.tag{display:inline-block;font-size:12px;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);margin-left:6px;vertical-align:1px}
-.compare{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:10px}
-.city{border-left:4px solid var(--sh)}
-.city.hk{border-left-color:var(--hk)}
-figure{margin:0}
-figure img{width:100%;height:auto;display:block;border-radius:8px;border:1px solid var(--line)}
-figcaption{font-size:14px;color:var(--muted);margin-top:6px}
+.small{font-size:14px}
+
+/* who / problem / not */
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px}
+.tile .ic{font-size:22px;line-height:1;margin-bottom:10px}
+.tile p{margin:0;color:var(--ink2)}
+.nots{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.nots li{font-size:13px;padding:3px 10px;border-radius:999px;background:var(--stop-soft);color:var(--stop)}
+.nots li::before{content:"✕ "}
+
+/* pipeline */
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-bottom:14px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.pipe{display:grid;grid-template-columns:repeat(5,1fr);gap:0;align-items:stretch}
+.node{position:relative;background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--team);border-radius:10px;padding:12px;margin-right:22px}
+.node:last-child{margin-right:0}
+.node:not(:last-child)::after{content:"";position:absolute;right:-17px;top:50%;width:12px;height:12px;
+  border-top:2px solid var(--muted);border-right:2px solid var(--muted);transform:translateY(-50%) rotate(45deg)}
+.node.exist{border-top-color:var(--exist)}
+.node.opt{border-style:dashed;border-top-style:solid}
+.node .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.node b{display:block;margin:2px 0 4px}
+.node p{margin:0;font-size:13px;color:var(--ink2)}
+.node .eg{display:inline-block;margin-top:6px;font-size:12px;background:var(--surface2);border-radius:5px;padding:1px 6px}
+.branches{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+.br{border-radius:10px;padding:10px 12px;font-size:14px}
+.br.ask{background:var(--ask-soft);color:var(--ask)}
+.br.stop{background:var(--stop-soft);color:var(--stop)}
+.br b{display:block;font-size:13px;text-transform:uppercase;letter-spacing:.04em}
+.br span{color:var(--ink2)}
+
+/* cities */
+.cities{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.citycard{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px}
+.citycard header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+.citycard header span{font-size:13px;color:var(--muted)}
+.bins{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.binx{text-align:center;font-size:12px;color:var(--ink2)}
+.binx .sw{width:100%;height:34px;border-radius:7px 7px 4px 4px;margin-bottom:5px}
+.rule{display:flex;gap:8px;font-size:14px;color:var(--ink2);margin:6px 0}
+.rule::before{content:"→";color:var(--accent);font-weight:700}
+.citycard .src{font-size:12px;margin-top:10px}
+
+/* screenshots */
 .shots{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-table{width:100%;border-collapse:collapse;font-size:15px;background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
-th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
-th{font-size:13px;color:var(--muted);font-weight:600}
-tr:last-child td{border-bottom:0}
-td.num{white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:600}
-.tablewrap{overflow-x:auto}
-pre{background:var(--code);border-radius:8px;padding:12px 14px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 12px}
-code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.92em}
-p code,li code,td code{background:var(--code);padding:1px 5px;border-radius:4px}
-.note{background:var(--warn-soft);border-radius:8px;padding:12px 14px;font-size:15px}
+.shot{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.shot img{width:100%;height:auto;display:block;border-bottom:1px solid var(--line)}
+.shot figcaption{padding:10px 14px;font-size:14px;color:var(--ink2);display:flex;gap:10px;align-items:flex-start}
+.step{flex:none;width:22px;height:22px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:12px;font-weight:700;display:grid;place-items:center;margin-top:1px}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:0 7px;border-radius:999px;margin-left:4px;vertical-align:1px}
+.pill.ok{background:var(--accent-soft);color:var(--accent)}
+.pill.ask{background:var(--ask-soft);color:var(--ask)}
+
+/* run */
+.runs{display:grid;grid-template-columns:1.1fr 1fr;gap:16px;align-items:start}
+.runs>*,.fails>*,.hero>*,.cities>*{min-width:0}
+.term{background:var(--term);color:var(--term-ink);border-radius:12px;overflow:hidden}
+.term .bar{display:flex;gap:6px;padding:10px 12px;background:rgba(255,255,255,.04)}
+.term .bar i{width:10px;height:10px;border-radius:50%;background:#3a4842}
+.term pre{margin:0;padding:12px 16px 16px;overflow-x:auto;font-size:13.5px;line-height:1.7}
+.term .c{color:var(--term-dim)}
+.term .p{color:#77c29a}
+.req{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0;padding:0;list-style:none}
+.req li{font-size:13px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+.req li::before{content:"✓ ";color:var(--accent);font-weight:700}
+.io{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:14px}
+.io th,.io td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+.io th{font-size:12px;color:var(--muted);font-weight:600}
+.io tr:last-child td{border-bottom:0}
+.io .out{display:flex;align-items:center;gap:8px}
+.io .sw{width:14px;height:14px;border-radius:4px}
+.io .q{color:var(--ask);font-weight:600}
+.io .x{color:var(--stop);font-weight:600}
+
+/* results */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.stat .v{font-size:28px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
+.stat .v small{font-size:15px;font-weight:600;color:var(--muted)}
+.stat .l{font-size:13px;color:var(--ink2);margin-top:4px}
+.recall{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;margin-top:12px}
+.recall h3{margin-bottom:12px}
+.row{display:grid;grid-template-columns:200px 1fr 54px;gap:12px;align-items:center;margin:8px 0;font-size:14px}
+.track{height:14px;background:var(--surface2);border-radius:4px;position:relative}
+.fill{height:100%;border-radius:0 4px 4px 0;background:var(--accent)}
+.fill.half{background:var(--ask)}
+.row .n{font-variant-numeric:tabular-nums;font-weight:600;text-align:right}
+.evidence{font-size:13px;color:var(--muted);margin-top:10px}
+
+/* failure */
+.fails{display:grid;grid-template-columns:1.1fr 1fr;gap:16px;align-items:start}
+.mock{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px}
+.mock .in{background:var(--surface2);border-radius:8px;padding:9px 12px;font-family:ui-monospace,Consolas,monospace;font-size:14px}
+.mock .outbox{margin-top:10px;border-radius:8px;padding:10px 12px;background:var(--stop-soft);color:var(--stop);font-size:14px}
+.mock .why{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin-top:14px;font-size:14px}
+.mock .why b{color:var(--muted);font-weight:600}
+.limits{display:flex;flex-direction:column;gap:8px}
+.lim{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px;color:var(--ink2)}
+.lim .ic{flex:none;font-size:16px;line-height:1.3}
+
+/* team */
 .team{display:flex;flex-wrap:wrap;gap:10px}
-.team span{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 14px}
-footer{padding:28px 0 48px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
-@media (max-width:720px){
-  .grid2,.compare,.shots{grid-template-columns:1fr}
-  header{padding-top:36px}
+.team span{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 14px 6px 6px}
+.team span i{width:26px;height:26px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-style:normal;font-size:12px;font-weight:700}
+footer{padding:24px 0 44px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+
+@media (max-width:820px){
+  .hero,.runs,.fails,.cities{grid-template-columns:1fr}
+  .stats{grid-template-columns:1fr 1fr}
+  .pipe{grid-template-columns:1fr}
+  .node{margin:0 0 22px}
+  .node:last-child{margin:0}
+  .node:not(:last-child)::after{right:auto;left:50%;top:auto;bottom:-17px;transform:translateX(-50%) rotate(135deg)}
+  .branches,.trio{grid-template-columns:1fr}
+  .shots{grid-template-columns:1fr}
+  .row{grid-template-columns:1fr 46px}
+  .row .lab{grid-column:1/-1;margin-bottom:-4px}
+}
+@media (max-width:420px){
+  .fork{grid-template-columns:1fr}
+  .bins{grid-template-columns:repeat(2,1fr)}
 }
 </style>
 </head>
 <body>
 
 <nav><div class="wrap">
+  <b>Team 11</b>
   <a href="#problem">Problem</a>
-  <a href="#how">How it works</a>
+  <a href="#workflow">Workflow</a>
+  <a href="#cities">Customisation</a>
   <a href="#demo">Run example</a>
   <a href="#run">Run it</a>
   <a href="#results">Results</a>
-  <a href="#limits">Limits</a>
-  <a href="#ethics">Ethics &amp; AI use</a>
+  <a href="#limits">Failure &amp; limits</a>
   <a href="#team">Team</a>
 </div></nav>
 
-<header class="wrap">
-  <p class="eyebrow">AILT9019 · Team 11 · Final project, November 2026</p>
-  <h1>Shanghai and Hong Kong Waste Sorting Helper</h1>
-  <p class="zh">上海與香港垃圾分類助手</p>
-  <p class="lede">Type a household item in Chinese or English, pick a city, and get the local bin, how to prepare the item and the official rule it comes from. <b>Sourced local rules decide the bin</b>. An optional AI step can only choose between wordings we reviewed in advance.</p>
-  <div class="btns">
-    <!-- TODO before submission: replace the two # links with the YouTube (Unlisted) URLs -->
-    <a class="btn primary" id="demo-link" href="#">▶ Demo video <small>(link coming)</small></a>
-    <a class="btn" id="talk-link" href="#">▶ 3-min presentation <small>(link coming)</small></a>
-    <a class="btn" href="https://github.com/hryLiuYibo/AILT9019_Team11_Project">Code repository <small>(teaching team access)</small></a>
+<header class="wrap hero">
+  <div>
+    <p class="eyebrow">AILT9019 · Team 11 · Final project</p>
+    <h1>Shanghai and Hong Kong Waste Sorting Helper</h1>
+    <p class="zh">上海與香港垃圾分類助手</p>
+    <p class="lede">Name an item in Chinese or English and pick a city. The app shows <b>the local bin, how to prepare the item, and the official rule behind the answer</b>.</p>
+    <div class="btns">
+      <!-- When the demo is on YouTube: put the URL in href and remove aria-disabled -->
+      <a class="btn primary" id="demo-link" href="#" aria-disabled="true">▶ Demo video <small>coming soon</small></a>
+      <a class="btn" href="https://github.com/hryLiuYibo/AILT9019_Team11_Project">Code repository <small>teaching team access</small></a>
+    </div>
+  </div>
+
+  <div class="duel" aria-label="Same item, two cities">
+    <div class="query"><span class="ico">🧴</span>plastic bottle</div>
+    <div class="fork">
+      <div class="res">
+        <div class="city">Shanghai</div>
+        <div class="bin"><i class="sw" style="background:var(--sh-rec)"></i><div><b>Recyclable Waste</b><span>blue bin</span></div></div>
+        <div class="src">Empty, rinse, flatten · 2024 Guidelines, Table 2</div>
+      </div>
+      <div class="res">
+        <div class="city">Hong Kong</div>
+        <div class="bin"><i class="sw" style="background:var(--hk-brown)"></i><div><b>Plastic recycling</b><span>brown bin</span></div></div>
+        <div class="src">Empty, rinse · EPD FAQ Q6</div>
+      </div>
+    </div>
+    <p class="duel-note">Same input, different answers. The two cities' rules are never mixed.</p>
   </div>
 </header>
 
 <main>
 
 <section id="problem"><div class="wrap">
-  <h2>Who it is for and what problem it solves</h2>
-  <div class="grid2">
-    <div class="card">
-      <h3>Users</h3>
-      <p>Students and residents who move between Shanghai and Hong Kong, for example HKU students studying at both campuses, and anyone who knows one city's rules but not the other's.</p>
-    </div>
-    <div class="card">
-      <h3>Problem</h3>
-      <p>The same item goes into different bins in the two cities. A plastic bottle is <span style="color:var(--sh);font-weight:600">blue "Recyclable Waste"</span> in Shanghai but the <span style="color:var(--hk);font-weight:600">brown plastics stream</span> in Hong Kong. General chatbots blend the two systems and rarely say where a rule comes from.</p>
-    </div>
+  <div class="sh"><span class="num">01</span><h2>Users and problem</h2></div>
+  <div class="trio">
+    <div class="tile"><div class="ic">👥</div><h3>Who it's for</h3>
+      <p>Students and residents who move between Shanghai and Hong Kong, such as HKU students on both campuses.</p></div>
+    <div class="tile"><div class="ic">❓</div><h3>The problem</h3>
+      <p>The two cities sort waste differently. General chatbots mix up their rules and seldom cite a source.</p></div>
+    <div class="tile"><div class="ic">🚫</div><h3>Not for</h3>
+      <ul class="nots">
+        <li>prices</li><li>collection-point locations</li><li>"should I throw it away"</li><li>medical / legal advice</li><li>overriding on-site signs</li>
+      </ul></div>
   </div>
-  <h3>What it does not do</h3>
-  <ul>
-    <li>No recycling prices, collection-point addresses or opening hours.</li>
-    <li>No decision on whether something should be thrown away at all, and no medical, legal or commercial advice.</li>
-    <li>It does not replace the signs at your bins or your building's rules. Acceptance can differ between collection points.</li>
-  </ul>
 </div></section>
 
-<section id="how"><div class="wrap">
-  <h2>How it works</h2>
-  <p class="muted">Input → processing → output. Every step except the optional wording step is deterministic and runs offline with no API key.</p>
-
-  <div class="flow">
-    <div class="step"><div class="n">1</div><div><b>Choose a city</b>Shanghai or Hong Kong. Each city has its own dataset. An item that only exists in the other city's data never borrows that city's rule.
-      <div class="side">No city selected → the app asks for one.</div></div></div>
-    <div class="arrow"></div>
-    <div class="step"><div class="n">2</div><div><b>Type the item, with bilingual autocomplete</b>Prefix/contains suggestions match Chinese or English aliases, e.g. typing <code>膠</code> suggests 膠樽 · plastic drink bottle. Suggestions only fill the box after you click one. Nothing is submitted automatically.</div></div>
-    <div class="arrow"></div>
-    <div class="step"><div class="n">3</div><div><b>Normalise and look up</b>Full-width to half-width conversion and other text clean-up, then an exact match against that city's reviewed alias index. Optional tags (e.g. "rinsed", "has food residue") apply fixed, sourced condition rules.
-      <div class="side">Material only ("plastic"), negation, two items at once, or conflicting tags → a follow-up question, not a guess.</div></div></div>
-    <div class="arrow"></div>
-    <div class="step"><div class="n">4</div><div><b>Decide with local rules</b>The matched entry gives the destination, bin colour, preparation, exceptions and the source clause.
-      <div class="side">Not in the city's data → "not covered in this city". Out of scope → a refusal with the reason.</div></div></div>
-    <div class="arrow"></div>
-    <div class="step"><div class="n">5</div><div><b>Optional AI wording</b> <span class="tag">off by default</span>With the user's own DeepSeek key and consent, the model may pick one of two reviewed wordings. The city, item, bin, preparation and source must come back unchanged, or the app falls back to the local template.</div></div>
-    <div class="arrow"></div>
-    <div class="step"><div class="n">✓</div><div><b>Result</b>Bilingual destination, bin colour, preparation, caveats and a link to the official source. A badge says whether the wording came from the local template or the AI.</div></div>
+<section id="workflow"><div class="wrap">
+  <div class="sh"><span class="num">02</span><h2>Workflow: input → processing → output</h2></div>
+  <div class="legend">
+    <span><i style="background:var(--team)"></i>Built by our team</span>
+    <span><i style="background:var(--exist)"></i>Existing model / API</span>
+    <span>Dashed = optional, off by default</span>
   </div>
-
-  <h3>What our team built vs. what we reused</h3>
-  <div class="grid2">
-    <div class="card">
-      <b>Team-built</b>
-      <ul>
-        <li>Two city datasets (68 Shanghai + 45 Hong Kong entries), each with Chinese/English aliases, preparation, exceptions and source clause</li>
-        <li>Shared CLI and web workflow, safe-failure rules and condition tags</li>
-        <li>Bilingual autocomplete</li>
-        <li>AI output guard that checks the facts and falls back to the template</li>
-        <li>Test suites, held-out phrasing set and CSV export</li>
-      </ul>
-    </div>
-    <div class="card">
-      <b>Existing capabilities used</b>
-      <ul>
-        <li>Python 3.10+ standard library: web server, JSON, unicode normalisation</li>
-        <li>Optional: DeepSeek API (<code>deepseek-flash</code>), only to choose a pre-written wording</li>
-        <li>Optional photo adapter for a vision model: suggests names only. Not evaluated with real photos.</li>
-        <li>Official rule documents from the Shanghai and Hong Kong governments</li>
-      </ul>
-    </div>
+  <div class="pipe">
+    <div class="node"><div class="k">Input</div><b>City + item</b><p>Chinese or English text, plus optional condition tags</p><span class="eg">香港 · 膠</span></div>
+    <div class="node"><div class="k">Suggest</div><b>Bilingual autocomplete</b><p>Lists matching names. The user picks one; nothing is auto-submitted.</p><span class="eg">膠 → 膠樽 · plastic bottle</span></div>
+    <div class="node"><div class="k">Decide</div><b>City rule lookup</b><p>Exact match in that city's reviewed dataset; tags apply fixed rules</p><span class="eg">offline · no API key</span></div>
+    <div class="node exist opt"><div class="k">Optional</div><b>AI wording</b><p>DeepSeek chooses between two wordings we pre-wrote. It cannot change the facts.</p><span class="eg">falls back to local text</span></div>
+    <div class="node"><div class="k">Output</div><b>Answer + source</b><p>Bin, colour, preparation, caveat and link to the official source</p><span class="eg">bilingual</span></div>
   </div>
+  <div class="branches">
+    <div class="br ask"><b>Asks instead of guessing</b><span>No city selected · material only ("plastic") · two items · conflicting tags</span></div>
+    <div class="br stop"><b>Not covered</b><span>Item missing from this city's data. The other city's rule is never borrowed.</span></div>
+    <div class="br stop"><b>Refuses</b><span>Out of scope, e.g. prices, bookings, medical waste. The reason is shown.</span></div>
+  </div>
+</div></section>
 
-  <h3>Domain customisation</h3>
-  <div class="compare">
-    <div class="card city">
-      <b style="color:var(--sh)">Shanghai</b>
-      <p>Four categories from the <i>Shanghai Household Waste Sorting Guidelines (2024)</i>, Table 2. Milk cartons and disposable lunch boxes depend on whether there is a dedicated local collection, so the app <b>asks</b> before deciding.</p>
+<section id="cities"><div class="wrap">
+  <div class="sh"><span class="num">03</span><h2>Domain customisation</h2></div>
+  <div class="cities">
+    <div class="citycard">
+      <header><h3>Shanghai</h3><span>68 entries</span></header>
+      <div class="bins">
+        <div class="binx"><i class="sw" style="display:block;background:var(--sh-rec)"></i>Recyclable</div>
+        <div class="binx"><i class="sw" style="display:block;background:var(--sh-haz)"></i>Hazardous</div>
+        <div class="binx"><i class="sw" style="display:block;background:var(--sh-wet)"></i>Wet</div>
+        <div class="binx"><i class="sw" style="display:block;background:var(--sh-dry)"></i>Dry</div>
+      </div>
+      <div class="rule">Milk cartons and lunch boxes: asks whether a dedicated local collection exists before deciding</div>
+      <div class="rule">"Has food residue" changes the result, as the guidelines require</div>
+      <div class="src"><a href="https://lhsr.sh.gov.cn/srgl/20240806/40b9feaa-53db-472f-8a6b-2c3cf0465def.html">Shanghai Household Waste Sorting Guidelines (2024)</a></div>
     </div>
-    <div class="card city hk">
-      <b style="color:var(--hk)">Hong Kong</b>
-      <p>Blue / yellow / brown recycling bins plus GREEN@COMMUNITY streams, each linked to its EPD FAQ question. An item that GREEN@COMMUNITY does not accept is <b>not</b> automatically sent to general waste. Special items point to official guidance.</p>
+    <div class="citycard">
+      <header><h3>Hong Kong</h3><span>45 entries</span></header>
+      <div class="bins">
+        <div class="binx"><i class="sw" style="display:block;background:var(--hk-blue)"></i>Paper</div>
+        <div class="binx"><i class="sw" style="display:block;background:var(--hk-yellow)"></i>Metal</div>
+        <div class="binx"><i class="sw" style="display:block;background:var(--hk-brown)"></i>Plastic</div>
+        <div class="binx"><i class="sw" style="display:block;background:var(--hk-green)"></i>GREEN@<br>COMMUNITY</div>
+      </div>
+      <div class="rule">Each answer cites its EPD FAQ question number</div>
+      <div class="rule">Not accepted ≠ general waste: special items point to official guidance</div>
+      <div class="src"><a href="https://www.wastereduction.gov.hk/en-hk/recycling-faq/greencommunity-faq">EPD GREEN@COMMUNITY FAQ</a> · <a href="https://www.info.gov.hk/gia/general/202006/16/P2020061600272.htm">bin colours</a></div>
     </div>
   </div>
 </div></section>
 
 <section id="demo"><div class="wrap">
-  <h2>A real run</h2>
-  <p class="muted">Screenshots of the actual app running locally in offline mode (<code>python src/app.py --offline</code>), 18 November 2026. No API key was used and none of these are mock-ups.</p>
+  <div class="sh"><span class="num">04</span><h2>A real run</h2></div>
+  <p class="muted small" style="margin:-8px 0 16px">Screenshots of the real app running offline (<code>python src/app.py --offline</code>) on 18 Nov 2026. No mock-ups.</p>
   <div class="shots">
-    <figure><img src="img/shanghai_bottle.jpg" alt="Shanghai result for plastic bottle: Recyclable Waste, blue bin, empty, rinse and flatten, with the 2024 guideline as the source" loading="lazy">
-      <figcaption><b>Shanghai · "plastic bottle"</b> → Recyclable Waste, blue bin. Empty, rinse, flatten. Source: 2024 guidelines, Table 2.</figcaption></figure>
-    <figure><img src="img/hongkong_bottle.jpg" alt="Hong Kong result for plastic bottle: plastic recycling, brown bin, with an acceptance caveat and the EPD FAQ Q6 source" loading="lazy">
-      <figcaption><b>Hong Kong · same input</b> → plastic recycling, brown bin, with an acceptance caveat. Source: EPD FAQ Q6.</figcaption></figure>
-    <figure><img src="img/autocomplete.jpg" alt="Typing 膠 shows six bilingual suggestions such as 膠樽 plastic drink bottle and 膠袋 plastic bag" loading="lazy">
-      <figcaption><b>Autocomplete</b>: one Chinese character gives bilingual candidates. The user still chooses one and submits it.</figcaption></figure>
-    <figure><img src="img/material_only.jpg" alt="Input plastic returns: material alone is insufficient, name the actual item" loading="lazy">
-      <figcaption><b>Boundary case</b>: "plastic" alone is not enough to decide. The app asks for the actual item and gives no category.</figcaption></figure>
+    <figure class="shot"><img src="img/shanghai_bottle.jpg" alt="Shanghai result for plastic bottle: Recyclable Waste, blue bin, with preparation and the 2024 guideline as source" loading="lazy">
+      <figcaption><span class="step">1</span><span>Shanghai · "plastic bottle" → Recyclable Waste, blue <span class="pill ok">matched</span></span></figcaption></figure>
+    <figure class="shot"><img src="img/hongkong_bottle.jpg" alt="Hong Kong result for plastic bottle: plastic recycling, brown bin, with acceptance caveat and EPD FAQ Q6 source" loading="lazy">
+      <figcaption><span class="step">2</span><span>Hong Kong · same input → plastic recycling, brown <span class="pill ok">matched</span></span></figcaption></figure>
+    <figure class="shot"><img src="img/autocomplete.jpg" alt="Typing 膠 shows six bilingual suggestions such as 膠樽 plastic drink bottle" loading="lazy">
+      <figcaption><span class="step">3</span><span>Typing "膠" lists bilingual candidates. Nothing is chosen until the user clicks one.</span></figcaption></figure>
+    <figure class="shot"><img src="img/material_only.jpg" alt="Input plastic returns: material alone is insufficient, name the actual item" loading="lazy">
+      <figcaption><span class="step">4</span><span>"plastic" alone → the app asks for the actual item <span class="pill ask">boundary</span></span></figcaption></figure>
   </div>
 </div></section>
 
 <section id="run"><div class="wrap">
-  <h2>Run it yourself</h2>
-  <p>Requires Python 3.10+. The core app, tests and exporter use only the standard library, so there is nothing to <code>pip install</code> and no API key is needed.</p>
-<pre><code>git clone https://github.com/hryLiuYibo/AILT9019_Team11_Project.git
-cd AILT9019_Team11_Project
-python tests/run_tests.py          # prints ALL PASS
-python src/app.py --offline        # then open http://localhost:8000</code></pre>
-  <p>Or use the command line:</p>
-<pre><code>python src/classify.py "plastic bottle" --city shanghai
-python src/classify.py "plastic bottle" --city hongkong
-python src/classify.py "milk carton" --city shanghai --tag cond_no_special_collection</code></pre>
-  <div class="tablewrap"><table>
-    <tr><th>City</th><th>Input</th><th>Expected output</th></tr>
-    <tr><td>Shanghai</td><td>plastic bottle</td><td>Recyclable Waste, blue; empty, rinse and flatten</td></tr>
-    <tr><td>Hong Kong</td><td>plastic bottle</td><td>Plastic recycling, brown; empty and rinse; follow signage</td></tr>
-    <tr><td>Hong Kong</td><td>milk carton</td><td>GREEN@COMMUNITY beverage-carton stream</td></tr>
-    <tr><td>Shanghai</td><td>milk carton</td><td>Asks whether a dedicated collection exists</td></tr>
-    <tr><td>Either</td><td>plastic</td><td>Asks for the actual item; no category</td></tr>
-    <tr><td>Either</td><td>rinsed + food residue tags</td><td>Conflict; no category</td></tr>
-  </table></div>
-  <p class="muted" style="margin-top:10px">The code repository is private to the team and the teaching team. If you are a classmate, the demo video shows the same workflow running end to end.</p>
+  <div class="sh"><span class="num">05</span><h2>Run it yourself</h2></div>
+  <div class="runs">
+    <div>
+      <div class="term">
+        <div class="bar"><i></i><i></i><i></i></div>
+<pre><span class="p">$</span> git clone https://github.com/hryLiuYibo/AILT9019_Team11_Project.git
+<span class="p">$</span> cd AILT9019_Team11_Project
+<span class="p">$</span> python tests/run_tests.py     <span class="c"># → ALL PASS</span>
+<span class="p">$</span> python src/app.py --offline   <span class="c"># → open localhost:8000</span></pre>
+      </div>
+      <ul class="req"><li>Python 3.10+</li><li>Standard library only</li><li>No API key</li><li>Works offline</li></ul>
+    </div>
+    <table class="io">
+      <tr><th>City</th><th>Input</th><th>Expected output</th></tr>
+      <tr><td>Shanghai</td><td>plastic bottle</td><td><span class="out"><i class="sw" style="background:var(--sh-rec)"></i>Recyclable</span></td></tr>
+      <tr><td>Hong Kong</td><td>plastic bottle</td><td><span class="out"><i class="sw" style="background:var(--hk-brown)"></i>Plastic</span></td></tr>
+      <tr><td>Hong Kong</td><td>milk carton</td><td><span class="out"><i class="sw" style="background:var(--hk-green)"></i>Carton stream</span></td></tr>
+      <tr><td>Shanghai</td><td>milk carton</td><td><span class="q">? local collection</span></td></tr>
+      <tr><td>Either</td><td>plastic</td><td><span class="q">? name the item</span></td></tr>
+      <tr><td>Either</td><td>rinsed + residue</td><td><span class="x">✕ conflict</span></td></tr>
+    </table>
+  </div>
 </div></section>
 
 <section id="results"><div class="wrap">
-  <h2>Evaluation results</h2>
-  <p><b>Question:</b> does the app give the sourced, city-correct destination for items it knows, and does it refuse or ask, instead of guessing, for everything else?</p>
-  <div class="tablewrap"><table>
-    <tr><th>Test</th><th>Result</th><th>What it shows</th></tr>
-    <tr><td>Shanghai baseline cases</td><td class="num">84 / 84</td><td>Destination, refusal and unknown cases all as expected</td></tr>
-    <tr><td>Hong Kong cases</td><td class="num">99 pass</td><td>Independent HK dataset, no Shanghai rule borrowed</td></tr>
-    <tr><td>Tag / condition cases</td><td class="num">19 / 19</td><td>Conditions change the result. Conflicts are refused.</td></tr>
-    <tr><td>Held-out phrasings, exact + top-3 autocomplete</td><td class="num">10 / 20 per city</td><td>Free-form wording coverage is limited (see below)</td></tr>
-    <tr><td>Held-out, after user picks the canonical name</td><td class="num">20 / 20 per city</td><td>Once the item is named, the decision is correct (controlled replay, not a user study)</td></tr>
-    <tr><td>Ambiguous / unknown inputs</td><td class="num">0 / 10 guessed</td><td>No unsafe automatic assignment</td></tr>
-    <tr><td>Live AI wording (DeepSeek)</td><td class="num">1 smoke test</td><td>One real query on 13 Nov 2026 kept all facts unchanged. Not a reliability test.</td></tr>
-  </table></div>
-  <p class="muted" style="margin-top:10px">Counts from <code>tests/run_tests.py</code>, <code>tools/check_recording.py</code> and <code>tools/evaluate_recall.py</code>, offline run on 13 November 2026. Some suites contain nested cases, so the rows should not be added together.</p>
+  <div class="sh"><span class="num">06</span><h2>Evaluation results</h2></div>
+  <p class="muted small" style="margin:-8px 0 16px">Goal: the right city-specific, sourced answer for known items, and a question or refusal instead of a guess for anything else.</p>
+  <div class="stats">
+    <div class="stat"><div class="v">84<small>/84</small></div><div class="l">Shanghai test cases pass</div></div>
+    <div class="stat"><div class="v">99</div><div class="l">Hong Kong cases pass, no Shanghai rule borrowed</div></div>
+    <div class="stat"><div class="v">19<small>/19</small></div><div class="l">Condition-tag cases, conflicts refused</div></div>
+    <div class="stat"><div class="v">0<small>/10</small></div><div class="l">Ambiguous inputs auto-assigned a bin</div></div>
+  </div>
+  <div class="recall">
+    <h3>Held-out phrasings (20 per city, never used for tuning)</h3>
+    <div class="row"><span class="lab">Found by exact name or top-3 suggestions</span><div class="track"><div class="fill half" style="width:50%"></div></div><span class="n">10/20</span></div>
+    <div class="row"><span class="lab">Correct once the item is named</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="n">20/20</span></div>
+    <p class="evidence">Same result in both cities. Evidence: <code>tests/run_tests.py</code>, <code>tools/evaluate_recall.py</code>, offline run on 13 Nov 2026. The optional AI wording passed one live DeepSeek query (a smoke test, not a reliability test).</p>
+  </div>
 </div></section>
 
 <section id="limits"><div class="wrap">
-  <h2>Failure cases and limitations</h2>
-  <div class="grid2">
-    <div class="card">
-      <h3>Observed failure: free-form wording</h3>
-      <p>Only half of the held-out phrasings (10/20 per city) are found by exact lookup or the top-3 suggestions. A user who writes "used PET bottle from the vending machine" may get "not covered" even though "plastic drink bottle" is in the data. The cause is that we match exact names and aliases and do no fuzzy or semantic matching. We chose that on purpose, because a fuzzy match could quietly pick the wrong bin.</p>
-      <p class="muted">Possible next step: fuzzy candidates that are only suggested and never decided, tested on the same frozen held-out set.</p>
+  <div class="sh"><span class="num">07</span><h2>Failure case and limitations</h2></div>
+  <div class="fails">
+    <div class="mock">
+      <h3>Observed failure: unusual wording</h3>
+      <div class="in">Hong Kong · used PET bottle from the vending machine</div>
+      <div class="outbox">✕ Not in the Hong Kong corpus. No Shanghai rule is borrowed.</div>
+      <div class="why">
+        <b>Expected</b><span>Plastic recycling, brown (the item is a plastic drink bottle)</span>
+        <b>Cause</b><span>Matching is exact on reviewed names. There is no fuzzy or semantic search.</span>
+        <b>Why kept</b><span>A fuzzy match could silently pick the wrong bin. "Not covered" is the safe failure.</span>
+        <b>Next</b><span>Fuzzy matches offered as suggestions only, retested on the same held-out set</span>
+      </div>
     </div>
-    <div class="card">
-      <h3>Scope limits</h3>
-      <ul>
-        <li>Only the 113 items in the datasets. Hong Kong food waste is not covered yet.</li>
-        <li>Rules were checked against the official sources on 13 Nov 2026 and can change.</li>
-        <li>The photo feature has <b>zero</b> real-photo evaluations. No recognition accuracy is claimed.</li>
-        <li>No real user study has been run.</li>
-      </ul>
+    <div class="limits">
+      <div class="lim"><span class="ic">📦</span>Only the 113 items in the datasets. Hong Kong food waste is not covered yet.</div>
+      <div class="lim"><span class="ic">📅</span>Rules were checked on 13 Nov 2026 and may change. On-site signs come first.</div>
+      <div class="lim"><span class="ic">📷</span>Photo input exists but has zero real-photo tests, so no accuracy is claimed.</div>
+      <div class="lim"><span class="ic">🧪</span>No user study has been run yet.</div>
     </div>
   </div>
-</div></section>
-
-<section id="ethics"><div class="wrap">
-  <h2>Ethics, data and AI use</h2>
-  <ul>
-    <li><b>Data</b>: public government pages only: the <a href="https://lhsr.sh.gov.cn/srgl/20240806/40b9feaa-53db-472f-8a6b-2c3cf0465def.html">Shanghai 2024 sorting guidelines</a>, the <a href="https://english.shanghai.gov.cn/en-Community/20231213/4d01af34ad254b83a60eafe4e9d95007.html">Shanghai official English FAQ</a>, the <a href="https://www.wastereduction.gov.hk/en-hk/recycling-faq/greencommunity-faq">HK EPD GREEN@COMMUNITY FAQ</a> and the <a href="https://www.info.gov.hk/gia/general/202006/16/P2020061600272.htm">HK government note on recycling bin colours</a>. No personal data is collected.</li>
-    <li><b>Risk</b>: a wrong answer could send an item to the wrong stream. <b>Mitigations</b>: every answer shows its source, the app asks instead of guessing, and the AI cannot change the decision.</li>
-    <li><b>API keys</b> are kept only in the page for that request. They are never written to disk or browser storage and are removed by Clear or a page refresh.</li>
-    <li><b>Photos</b> (optional) need explicit consent, have their metadata stripped before upload, and only produce suggested names.</li>
-    <li><b>AI-assisted development</b>: an AI coding assistant helped with implementation, tests, data structuring and documentation. Team members reviewed the sources, code and claims. Full disclosure is in Section 5 of the final report.</li>
-  </ul>
 </div></section>
 
 <section id="team"><div class="wrap">
-  <h2>Team 11</h2>
+  <div class="sh"><span class="num">08</span><h2>Team 11</h2></div>
   <div class="team">
-    <span>LIU Yibo</span><span>LU Song Lun</span><span>WEN Sum Yee</span><span>WANG Zixuan</span>
+    <span><i>LY</i>LIU Yibo</span><span><i>LS</i>LU Song Lun</span><span><i>WS</i>WEN Sum Yee</span><span><i>WZ</i>WANG Zixuan</span>
   </div>
-  <p class="muted" style="margin-top:12px">AILT9019 AI Literacy for Computing and Data Science, The University of Hong Kong, 2026.</p>
 </div></section>
 
 </main>
 
 <footer><div class="wrap">
-  Course prototype, not official disposal advice. Always follow on-site signage and collection-operator instructions.
+  AILT9019 AI Literacy for Computing and Data Science · The University of Hong Kong · 2026. Course prototype, not official disposal advice.
 </div></footer>
 
 </body>
