@@ -90,7 +90,9 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .flow svg{width:100%;height:auto;display:block;overflow:visible}
 .flow text{font-family:var(--sans);font-stretch:70%;font-weight:700;fill:var(--fg);text-transform:uppercase}
 .flow .sm{font-family:var(--mono);font-weight:400;font-size:12px;letter-spacing:.08em;fill:var(--dim)}
-.p-method .lede{margin-top:6vh}
+.p-method h2{margin-bottom:4vh}
+.notes{display:grid;grid-template-columns:repeat(4,1fr);gap:3vw;margin-top:5vh;max-width:1200px;border-top:1px solid var(--faint);padding-top:18px}
+.notes p{margin:6px 0 0;font-size:15px;line-height:1.35}
 
 /* 4 exits */
 .exits{display:grid;grid-template-columns:repeat(4,1fr);gap:3vw;max-width:1200px}
@@ -172,7 +174,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 <section class="page p-title" data-name="Start">
   <span class="tag cap">AILT9019 · Team 11</span>
   <h1 class="disp"><span>One item.</span><span>Two cities.</span><span class="ac">Two bins.</span></h1>
-  <p class="lede">Shanghai and Hong Kong sort the same item differently. We built a helper that follows each city's own official rules.</p>
+  <p class="lede">Shanghai and Hong Kong sort the same item differently. For people who live between the two, we built a helper that follows each city's own official rules.</p>
   <div class="hint cap"><i></i>Scroll</div>
 </section>
 
@@ -211,6 +213,12 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
       </g>
       <g text-anchor="middle"><text class="sm" x="790" y="164">optional · off by default</text></g>
     </svg>
+  </div>
+  <div class="notes">
+    <div><span class="cap">We built</span><p>Two city datasets · rule engine · bilingual autocomplete · AI guard · tests</p></div>
+    <div><span class="cap">We reused</span><p>Python standard library · DeepSeek API (optional)</p></div>
+    <div><span class="cap">Shanghai</span><p>68 items · 2024 Sorting Guidelines</p></div>
+    <div><span class="cap">Hong Kong</span><p>45 items · EPD GREEN@COMMUNITY FAQ</p></div>
   </div>
 </section>
 
