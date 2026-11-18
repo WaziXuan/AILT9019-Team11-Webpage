@@ -1,0 +1,27 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:"Archivo V";src:url(../fonts/archivo-latin-wdth-normal.woff2) format("woff2-variations");font-weight:100 900;font-stretch:62% 125%}
+@font-face{font-family:"JB Mono";src:url(../fonts/jetbrains-mono-latin-400-normal.woff2) format("woff2")}
+html,body{margin:0;width:1200px;height:630px;background:#141413;color:#ece8df;overflow:hidden}
+.wrap{position:relative;width:1200px;height:630px;padding:64px 72px;box-sizing:border-box}
+.cap{font-family:"JB Mono",monospace;font-size:20px;letter-spacing:.12em;text-transform:uppercase;color:rgba(236,232,223,.55)}
+h1{margin:34px 0 0;font-family:"Archivo V",sans-serif;font-stretch:66%;font-weight:800;text-transform:uppercase;font-size:138px;line-height:.86}
+h1 span{display:block}.ac{color:#ff5a36}
+.bins{position:absolute;right:84px;bottom:92px;display:flex;gap:26px;align-items:flex-end}
+.bin{position:relative;width:118px;height:150px;border-radius:6px;background:var(--c)}
+.bin::before{content:"";position:absolute;left:-10px;right:-10px;top:-24px;height:16px;border-radius:5px;background:var(--c);filter:brightness(1.12)}
+.bin::after{content:"";position:absolute;left:34%;right:34%;top:38px;height:7px;border-radius:4px;background:rgba(255,255,255,.55)}
+.lab{position:absolute;bottom:-40px;left:-40px;right:-40px;text-align:center;white-space:nowrap}
+.ground{position:absolute;right:56px;bottom:90px;width:340px;height:2px;background:rgba(236,232,223,.35)}
+.foot{position:absolute;left:72px;bottom:56px}
+</style></head><body><div class="wrap">
+  <div class="cap">AILT9019 · Team 11</div>
+  <h1><span>One item.</span><span>Two cities.</span><span class="ac">Two bins.</span></h1>
+  <div class="ground"></div>
+  <div class="bins">
+    <div class="bin" style="--c:#2462a3"><span class="lab cap">Shanghai</span></div>
+    <div class="bin" style="--c:#8a5d40"><span class="lab cap">Hong Kong</span></div>
+  </div>
+  <div class="foot cap">Waste sorting by each city's official rules</div>
+</div></body></html>

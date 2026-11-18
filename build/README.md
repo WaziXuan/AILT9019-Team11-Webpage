@@ -6,7 +6,7 @@
    (hryLiuYibo/AILT9019_Team11_Project) so every answer is real classifier output:
    `python path/to/gen_explorer.py > path/to/explorer.json`
 2. `python build.py page.src.html explorer.json ../index.html`
-3. Upload `index.html` + `img/` + `fonts/` + `vendor/` (zip with forward-slash paths) to the Cloudflare Pages project `ailt9019-team11`.
+3. Upload `index.html`, favicon.svg, favicon-32.png, apple-touch-icon.png, og.png + `img/` + `fonts/` + `vendor/` (zip with forward-slash paths) to the Cloudflare Pages project `ailt9019-team11`.
 
 ## Screenshots (img/*.png, img/*_dark.png)
 
@@ -17,3 +17,8 @@ Run the app (`python src/app.py 8123 --offline`), start
 For the dark set, start a second headless Chrome with
 `--enable-features=WebContentsForceDark --force-dark-mode` on port 9334 and run
 `node shoot.mjs 9334 http://localhost:8123/ ../img _dark`.
+
+## Icons and link preview
+
+`favicon.svg` is hand-written. `og.png` (1200x630) and the PNG icons are rendered with headless Chrome from
+`build/og.html` and `build/icon.html` (512px, then scaled down with ffmpeg) while the folder is served on localhost.
