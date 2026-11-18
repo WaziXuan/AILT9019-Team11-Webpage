@@ -4,347 +4,280 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>One Item, Two Bins · Team 11</title>
-<meta name="description" content="A bilingual waste-sorting helper for Shanghai and Hong Kong. Each answer comes from the city's own official rules, and cites them. AILT9019 Team 11.">
+<meta name="description" content="The same item goes in different bins in Shanghai and Hong Kong. A bilingual sorting helper where each city's official rules decide. AILT9019 Team 11.">
 <link rel="preload" href="fonts/archivo-latin-wdth-normal.woff2" as="font" type="font/woff2" crossorigin>
 <style>
 @font-face{font-family:"Archivo V";src:url(fonts/archivo-latin-wdth-normal.woff2) format("woff2-variations");font-weight:100 900;font-stretch:62% 125%;font-display:swap}
 @font-face{font-family:"JB Mono";src:url(fonts/jetbrains-mono-latin-400-normal.woff2) format("woff2");font-weight:400;font-display:swap}
 @font-face{font-family:"JB Mono";src:url(fonts/jetbrains-mono-latin-500-normal.woff2) format("woff2");font-weight:500;font-display:swap}
 
+/* Three key tones only: charcoal, bone, vermilion. Bin colours live in illustrations. */
 :root{
-  --paper:#eeece5; --paper2:#e5e2d9; --ink:#141413; --ink2:#46453f; --mute:#82807a; --hair:#c9c5b9;
-  --ask:#b86e00; --stop:#c0321d;
-  --sans:"Archivo V","PingFang SC","PingFang TC","Microsoft YaHei","Microsoft JhengHei","Noto Sans CJK SC",system-ui,sans-serif;
-  --mono:"JB Mono",ui-monospace,Consolas,"PingFang SC","Microsoft YaHei",monospace;
-  --pad:16px;
+  --bg:#141413; --fg:#ece8df; --ac:#ff5a36;
+  --dim:rgba(236,232,223,.5); --faint:rgba(236,232,223,.14);
+  --sans:"Archivo V","PingFang SC","PingFang TC","Microsoft YaHei","Microsoft JhengHei",system-ui,sans-serif;
+  --mono:"JB Mono",ui-monospace,Consolas,"Microsoft YaHei",monospace;
+  color-scheme:dark;
 }
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){--paper:#131312; --paper2:#1b1b19; --ink:#ebe8df; --ink2:#b8b5ab; --mute:#7f7c74; --hair:#33322e; --ask:#f0a640; --stop:#f0705c}
-}
-:root[data-theme="dark"]{--paper:#131312; --paper2:#1b1b19; --ink:#ebe8df; --ink2:#b8b5ab; --mute:#7f7c74; --hair:#33322e; --ask:#f0a640; --stop:#f0705c}
-
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.5 var(--sans);font-stretch:100%}
-a{color:inherit;text-decoration-thickness:1px;text-underline-offset:3px}
+html{scroll-snap-type:y mandatory;overflow-y:scroll;scrollbar-width:none}
+html::-webkit-scrollbar{display:none}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 17px/1.45 var(--sans)}
+a{color:inherit}
 button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
-.wrap{max-width:1240px;margin:0 auto;padding:0 var(--pad)}
-.mono{font-family:var(--mono);font-size:12px;letter-spacing:.02em}
-.cap{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
-.disp{font-family:var(--sans);font-stretch:68%;font-weight:800;text-transform:uppercase;letter-spacing:-.005em;line-height:.88}
+.cap{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.disp{font-family:var(--sans);font-stretch:66%;font-weight:800;text-transform:uppercase;line-height:.86;letter-spacing:-.005em;margin:0}
+.ac{color:var(--ac)}
 
-/* masthead */
-.mast{border-bottom:1.5px solid var(--ink)}
-.mast .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:46px}
-.mast .id{display:flex;align-items:center;gap:10px}
-.mast .id i{display:inline-block;width:6px;height:14px}
-.mast nav{display:flex;gap:22px;white-space:nowrap}
-.mast .id{white-space:nowrap}
-.mast nav a{text-decoration:none}
-.mast nav a:hover{text-decoration:underline}
-.mast nav a[aria-disabled="true"]{color:var(--mute);pointer-events:none}
+/* pages */
+.page{position:relative;height:100vh;scroll-snap-align:start;scroll-snap-stop:always;overflow:hidden;
+  display:flex;flex-direction:column;justify-content:center;padding:0 7vw}
+.page>*{transition:opacity .6s ease, transform .6s cubic-bezier(.2,.7,.2,1)}
+.page:not(.on)>*{opacity:0;transform:translateY(24px)}
+.page .tag{position:absolute;top:28px;left:7vw}
+.page h2{font-size:clamp(48px,7.4vw,112px);margin-bottom:5vh}
+.lede{font-size:clamp(17px,1.5vw,22px);max-width:34ch;color:var(--dim);margin:0}
 
-/* hero */
-.hero{display:grid;grid-template-columns:repeat(12,1fr);gap:0 24px;padding:40px 0 28px;align-items:end}
-.hero h1{grid-column:1/9;margin:0;font-size:clamp(56px,12.4vw,128px);white-space:nowrap}
-.hero h1 span{display:block}
-.hero h1 .c1{color:var(--ink)}
-.hero .dek{grid-column:9/13;padding-bottom:10px}
-.hero .dek p{margin:0 0 14px;font-size:18px;line-height:1.35;font-stretch:92%}
-.hero .zh{font-size:15px;color:var(--ink2);margin:0 0 18px}
-.facts{border-top:1.5px solid var(--ink)}
-.facts div{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid var(--hair);padding:6px 0}
-.facts b{font-weight:500;color:var(--ink)}
+/* chrome: corner mark + page dots */
+.mark{position:fixed;top:26px;right:7vw;z-index:5}
+.mark a{text-decoration:none;margin-left:22px}
+.mark a:hover{color:var(--fg)}
+.mark a[aria-disabled="true"]{opacity:.45;pointer-events:none}
+.dots{position:fixed;right:24px;top:50%;transform:translateY(-50%);z-index:5;display:flex;flex-direction:column;gap:12px}
+.dots button{width:8px;height:8px;border-radius:50%;background:var(--faint);transition:background .2s,transform .2s}
+.dots button[aria-current="true"]{background:var(--ac);transform:scale(1.4)}
+.hint{position:absolute;bottom:28px;left:7vw;display:flex;align-items:center;gap:10px}
+.hint i{display:inline-block;width:1px;height:28px;background:var(--dim);animation:drop 1.8s ease-in-out infinite;transform-origin:top}
+@keyframes drop{0%{transform:scaleY(0)}50%{transform:scaleY(1)}100%{transform:scaleY(0);transform-origin:bottom}}
 
-/* section frame */
-.sec{border-top:1.5px solid var(--ink);padding:14px 0 56px}
-.sec-h{display:grid;grid-template-columns:repeat(12,1fr);gap:0 24px;align-items:baseline;margin-bottom:28px}
-.sec-h .cap{grid-column:1/3;padding-top:6px}
-.sec-h h2{grid-column:3/10;margin:0;font-size:clamp(40px,6vw,76px)}
-.sec-h .note{grid-column:10/13;font-size:14px;color:var(--ink2);line-height:1.4}
+/* 1 title */
+.p-title h1{font-size:clamp(72px,13vw,210px)}
+.p-title h1 span{display:block}
+.p-title .lede{margin-top:5vh}
 
-/* sorter */
-.sorter{border-top:1.5px solid var(--ink)}
-.picker{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--hair)}
-.pick{padding:12px 14px 11px;font-family:var(--mono);font-size:12px;letter-spacing:.03em;border-right:1px solid var(--hair);transition:background .15s,color .15s}
-.pick:hover{background:var(--paper2)}
-.pick[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
-.pick.mat{font-style:italic}
-.stage{position:relative;height:440px;border-bottom:1px solid var(--hair)}
+/* 2 sorter */
+.p-sort{justify-content:flex-start;padding-top:84px;padding-bottom:28px}
+.picker{display:flex;gap:6px;flex-wrap:wrap}
+.pick{font-family:var(--mono);font-size:13px;padding:8px 13px;border:1px solid var(--faint);border-radius:999px;transition:background .15s,color .15s,border-color .15s}
+.pick:hover{border-color:var(--dim)}
+.pick[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.stage{flex:1;min-height:0;position:relative;margin:8px 0}
 .stage canvas{display:block;width:100%;height:100%}
-.stage .hint{position:absolute;left:0;bottom:10px}
-.verdicts{display:grid;grid-template-columns:1fr 1fr}
-.v{padding:18px 24px 22px 0;min-height:190px}
-.v+.v{padding-left:24px;border-left:1px solid var(--hair)}
-.v .city{font-size:34px;margin:0 0 14px}
-.v .cat{display:flex;align-items:center;gap:12px;font-size:20px;font-weight:600;font-stretch:90%;line-height:1.15}
-.v .cat i{width:22px;height:22px;flex:none;background:var(--c);box-shadow:inset 0 0 0 1px rgba(127,127,127,.35)}
-.v .prep{margin:10px 0 8px;color:var(--ink2);font-size:15px}
-.v .src{color:var(--mute)}
-.v .flag{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:3px 7px;border:1.5px solid currentColor}
-.v .flag.ask{color:var(--ask)} .v .flag.stop{color:var(--stop)}
-.v .msg{margin:10px 0 0;color:var(--ink2);font-size:15px;max-width:52ch}
-.opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-.opt{font-family:var(--mono);font-size:12px;padding:6px 10px;border:1.5px solid var(--ask);color:var(--ask)}
-.opt[aria-pressed="true"]{background:var(--ask);color:var(--paper)}
-.provenance{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:12px 0 0;border-top:1px solid var(--hair)}
-.legend{display:flex;gap:18px;flex-wrap:wrap}
-.legend span{display:inline-flex;align-items:center;gap:6px}
-.legend i{width:9px;height:9px}
+.results{display:grid;grid-template-columns:1fr 1fr;gap:6vw;min-height:84px}
+.res .cap{display:block;margin-bottom:6px}
+.res .big{font-size:clamp(22px,2.1vw,30px);font-weight:600;font-stretch:88%;line-height:1.15;display:flex;align-items:center;gap:12px}
+.res .big i{width:18px;height:18px;flex:none}
+.res .sub{font-family:var(--mono);font-size:12px;color:var(--dim);margin-top:6px;display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.res .sub a{text-decoration:none;border-bottom:1px solid var(--faint)}
+.res .sub a:hover{border-color:var(--fg)}
+.opt{font-family:var(--mono);font-size:12px;padding:4px 10px;border:1px solid var(--ac);color:var(--ac);border-radius:999px}
+.opt[aria-pressed="true"]{background:var(--ac);color:var(--bg)}
 
-/* how */
-.steps5{display:grid;grid-template-columns:repeat(5,1fr);gap:0 24px}
-.st{border-top:4px solid var(--ink);padding-top:10px}
-.st.model{border-top-style:dashed;border-top-color:var(--mute)}
-.st .n{display:block;margin-bottom:22px}
-.st b{display:block;font-family:var(--sans);font-stretch:72%;font-weight:700;font-size:26px;line-height:1;text-transform:uppercase}
-.st p{margin:8px 0 0;font-size:14px;color:var(--ink2);line-height:1.35}
-.exits{margin-top:36px;display:grid;grid-template-columns:repeat(12,1fr);gap:0 24px}
-.exits .cap{grid-column:1/3;padding-top:4px}
-.exits ul{grid-column:3/13;list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:0 24px}
-.exits li{display:flex;gap:12px;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--hair);font-size:15px}
-.exits li i{flex:none;width:10px;height:10px;transform:translateY(1px)}
-.exits li b{font-weight:600}
-.key2{margin-top:14px;display:flex;gap:22px;flex-wrap:wrap}
-.key2 span{display:inline-flex;align-items:center;gap:8px}
-.key2 i{display:inline-block;width:28px;border-top:4px solid var(--ink)}
-.key2 i.d{border-top:4px dashed var(--mute)}
+/* 3 method */
+.flow{width:100%;max-width:1100px}
+.flow svg{width:100%;height:auto;display:block;overflow:visible}
+.flow text{font-family:var(--sans);font-stretch:70%;font-weight:700;fill:var(--fg);text-transform:uppercase}
+.flow .sm{font-family:var(--mono);font-weight:400;font-size:12px;letter-spacing:.08em;fill:var(--dim)}
+.p-method .lede{margin-top:6vh}
 
-/* run viewer */
-.viewer{display:grid;grid-template-columns:repeat(12,1fr);gap:0 24px;align-items:start}
-.tabs{grid-column:1/4;display:flex;flex-direction:column;border-top:1px solid var(--hair)}
-.tab{display:grid;grid-template-columns:28px 1fr;text-align:left;padding:12px 0;border-bottom:1px solid var(--hair)}
-.tab .n{color:var(--mute)}
-.tab span:last-child{font-size:15px;line-height:1.3}
-.tab em{display:block;font-style:normal;font-family:var(--mono);font-size:11px;color:var(--mute);margin-top:3px}
-.tab[aria-selected="true"]{box-shadow:inset 3px 0 0 var(--ink);padding-left:12px}
-.tab[aria-selected="true"] .n{color:var(--ink)}
-.shotbox{grid-column:4/13;border:1.5px solid var(--ink)}
-.shotbox .bar{display:flex;justify-content:space-between;padding:7px 10px;border-bottom:1.5px solid var(--ink)}
-.shotbox img{display:block;width:100%;height:auto}
-.viewer .proof{grid-column:4/13;margin-top:8px}
+/* 4 exits */
+.exits{display:grid;grid-template-columns:repeat(4,1fr);gap:3vw;max-width:1200px}
+.ex svg{width:min(9vw,120px);height:auto;display:block;margin-bottom:22px}
+.ex b{display:block;font-family:var(--sans);font-stretch:70%;font-weight:700;font-size:clamp(22px,2vw,30px);text-transform:uppercase;line-height:1}
+.ex span{display:block;margin-top:10px;font-family:var(--mono);font-size:13px;color:var(--dim)}
+.ex span em{font-style:normal;color:var(--ac)}
 
-/* run it */
-.runs{display:grid;grid-template-columns:repeat(12,1fr);gap:0 24px;align-items:start}
-.term{grid-column:1/8;background:#141413;color:#e9e6dc;padding:18px 20px;font-family:var(--mono);font-size:13.5px;line-height:1.8;white-space:pre-wrap;word-break:break-all;margin:0}
-:root:not([data-theme="light"]) .term{box-shadow:inset 0 0 0 1px var(--hair)}
-.term .p{color:#8a877d}.term .ok{color:#9fd3a8}
-.spec{grid-column:8/13;margin:0;border-top:1.5px solid var(--ink)}
-.spec div{display:grid;grid-template-columns:120px 1fr;gap:12px;padding:10px 0;border-bottom:1px solid var(--hair)}
-.spec dt{margin:0}
-.spec dd{margin:0;font-size:15px}
-.spec dd a{word-break:break-all}
+/* 5 screenshots */
+.p-run{flex-direction:row;align-items:center;gap:5vw}
+.p-run .side{flex:0 0 26%}
+.p-run .side h2{margin-bottom:4vh}
+.shotnav{display:flex;flex-direction:column;gap:2px}
+.sn{display:flex;gap:14px;align-items:baseline;text-align:left;padding:10px 0;color:var(--dim);font-size:16px;transition:color .2s}
+.sn .n{font-family:var(--mono);font-size:12px}
+.sn[aria-selected="true"]{color:var(--fg)}
+.sn[aria-selected="true"] .n{color:var(--ac)}
+.frame{flex:1;height:76vh;border-radius:10px;overflow:hidden;background:#1b1b19;box-shadow:0 0 0 1px var(--faint)}
+.frame img{width:100%;height:100%;object-fit:cover;object-position:top left;display:block}
 
-/* results */
-.nums{display:grid;grid-template-columns:repeat(4,1fr);border-top:1.5px solid var(--ink);border-bottom:1px solid var(--hair)}
-.num{padding:14px 16px 16px 0}
-.num+.num{padding-left:16px;border-left:1px solid var(--hair)}
-.num .big{font-size:clamp(56px,7vw,96px)}
-.num .big small{font-size:.42em;color:var(--mute)}
-.num p{margin:8px 0 0;font-size:14px;color:var(--ink2);max-width:22ch}
-.strips{display:grid;grid-template-columns:1fr 1fr;gap:0 24px;margin-top:28px}
-.strip .row{display:grid;grid-template-columns:repeat(20,1fr);gap:3px;margin:10px 0 8px}
-.strip .row i{aspect-ratio:1/1.6;background:var(--ink)}
-.strip .row i.x{background:transparent;box-shadow:inset 0 0 0 1px var(--hair)}
-.strip .lab{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
-.strip .lab b{font-family:var(--sans);font-stretch:68%;font-weight:800;font-size:34px;line-height:1}
-.evi{margin-top:18px;max-width:80ch}
+/* 6 run it */
+.term{font-family:var(--mono);font-size:clamp(14px,1.25vw,18px);line-height:2;margin:0;white-space:pre}
+.term .p{color:var(--ac)} .term .o{color:var(--dim)}
+.chips{display:flex;gap:28px;margin-top:6vh}
+.chips span{font-family:var(--mono);font-size:13px;color:var(--dim)}
+.chips span::before{content:"✓ ";color:var(--ac)}
 
-/* fails */
-.fails{display:grid;grid-template-columns:repeat(12,1fr);gap:0 24px;align-items:start}
-.ticket{grid-column:1/8;border:1.5px solid var(--ink)}
-.ticket .row{display:grid;grid-template-columns:110px 1fr;gap:12px;padding:12px 16px;border-bottom:1px solid var(--hair);font-size:15px}
-.ticket .row:last-child{border-bottom:0}
-.ticket .in{font-family:var(--mono);font-size:14px}
-.ticket .out{color:var(--stop);font-family:var(--mono);font-size:14px}
-.lims{grid-column:8/13;border-top:1.5px solid var(--ink)}
-.lim{display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--hair)}
-.lim .big{font-size:40px}
-.lim p{margin:0;font-size:14px;color:var(--ink2);line-height:1.35}
+/* 7 results */
+.nums{display:grid;grid-template-columns:repeat(4,1fr);gap:3vw;max-width:1250px}
+.num .v{font-size:clamp(72px,9vw,140px)}
+.num .v small{font-size:.38em;color:var(--dim)}
+.num p{margin:12px 0 0;font-family:var(--mono);font-size:13px;color:var(--dim);max-width:24ch}
+.strips{display:grid;grid-template-columns:1fr 1fr;gap:4vw;margin-top:8vh;max-width:1250px}
+.strip .row{display:grid;grid-template-columns:repeat(20,1fr);gap:4px;margin-top:12px}
+.strip .row i{height:30px;background:var(--fg);border-radius:2px}
+.strip .row i.x{background:var(--faint)}
 
-/* team */
-.team{display:grid;grid-template-columns:repeat(4,1fr);border-top:1.5px solid var(--ink)}
-.mem{padding:12px 16px 0 0;font-size:clamp(28px,3.4vw,44px)}
-.mem+.mem{padding-left:16px;border-left:1px solid var(--hair)}
-.mem i{display:block;width:100%;height:8px;margin-bottom:12px}
-.colophon{display:grid;grid-template-columns:repeat(12,1fr);gap:0 24px;padding:28px 0 48px;border-top:1px solid var(--hair);margin-top:40px}
-.colophon div{grid-column:span 4;font-size:13px;color:var(--ink2);line-height:1.5}
-.colophon .cap{display:block;margin-bottom:6px}
+/* 8 fails */
+.chat{max-width:900px}
+.q{font-family:var(--mono);font-size:clamp(18px,1.9vw,26px)}
+.q .cap{display:block;margin-bottom:8px}
+.a{font-size:clamp(28px,3.2vw,46px);font-stretch:80%;font-weight:700;margin-top:4vh;line-height:1.1}
+.a .ac{font-family:var(--mono);font-weight:500}
+.why{margin-top:5vh;color:var(--dim);font-size:clamp(16px,1.3vw,19px);max-width:52ch}
+.limits{position:absolute;left:7vw;bottom:34px;display:flex;gap:40px}
+.limits span{font-family:var(--mono);font-size:12px;color:var(--dim)}
+.limits b{color:var(--fg);font-weight:500}
 
-@media (max-width:900px){
-  .hero h1{grid-column:1/13}
-  .hero .dek{grid-column:1/13;padding-top:22px}
-  .sec-h .cap{grid-column:1/13;padding:0 0 6px}
-  .sec-h h2{grid-column:1/13}
-  .sec-h .note{grid-column:1/13;margin-top:10px}
-  .steps5{grid-template-columns:1fr 1fr;gap:28px 16px}
-  .exits .cap,.exits ul{grid-column:1/13}
-  .exits ul{grid-template-columns:1fr}
-  .tabs,.shotbox,.viewer .proof,.term,.spec,.ticket,.lims{grid-column:1/13}
-  .tabs{flex-direction:row;overflow-x:auto;border-top:0;margin-bottom:12px}
-  .tab{flex:none;grid-template-columns:22px auto;padding:10px 12px;border-bottom:0;border-right:1px solid var(--hair)}
-  .tab em{display:none}
-  .tab[aria-selected="true"]{box-shadow:inset 0 -3px 0 var(--ink);padding-left:12px}
-  .spec,.lims{margin-top:20px}
-  .nums{grid-template-columns:1fr 1fr}
-  .num:nth-child(3){padding-left:0;border-left:0}
-  .num:nth-child(n+3){border-top:1px solid var(--hair)}
-  .strips{grid-template-columns:1fr;gap:24px}
-  .team{grid-template-columns:1fr 1fr}
-  .mem:nth-child(3){padding-left:0;border-left:0}
-  .colophon div{grid-column:1/13;margin-bottom:16px}
-  .stage{height:500px}
-  .verdicts{grid-template-columns:1fr}
-  .v{padding-right:0}
-  .v+.v{padding-left:0;border-left:0;border-top:1px solid var(--hair)}
-}
-@media (max-width:520px){
-  .mast nav{gap:14px}
-  .mast nav .opt-hide,.mast .id>span{display:none}
-  .steps5{grid-template-columns:1fr}
-  .pick{padding:10px 11px;font-size:12px}
-  .ticket .row,.lim{grid-template-columns:1fr;gap:4px}
-}
-@media (prefers-reduced-motion: reduce){ *{transition:none!important} }
+/* 9 team */
+.p-team h2{margin-bottom:6vh}
+.names{display:grid;grid-template-columns:repeat(4,1fr);gap:3vw;max-width:1200px}
+.names div{font-size:clamp(34px,4vw,60px)}
+.names i{display:block;height:6px;margin-bottom:16px;width:60%}
+.links{display:flex;gap:36px;margin-top:9vh}
+.links a{font-family:var(--mono);font-size:14px;text-decoration:none;border-bottom:1px solid var(--faint);padding-bottom:3px}
+.links a:hover{border-color:var(--ac)}
+.links a[aria-disabled="true"]{opacity:.45;pointer-events:none}
+.foot{position:absolute;left:7vw;right:7vw;bottom:28px;font-family:var(--mono);font-size:11px;color:var(--dim)}
+.foot a{color:var(--dim)}
+
+@media (prefers-reduced-motion: reduce){ .page>*{transition:none} .hint i{animation:none} }
 </style>
 </head>
 <body>
 
-<header class="mast"><div class="wrap">
-  <div class="id cap" style="color:var(--ink)"><span><i style="background:#173B6B"></i><i style="background:#E94531"></i><i style="background:#79523b"></i><i style="background:#bc931a"></i></span>AILT9019 / Team 11</div>
-  <nav class="cap" style="color:var(--ink)">
-    <!-- When the demo is on YouTube: set href and remove aria-disabled -->
-    <a id="demo-link" href="#" aria-disabled="true">Demo (soon)</a>
-    <a href="https://github.com/hryLiuYibo/AILT9019_Team11_Project">Code ↗</a>
-    <a class="opt-hide" href="#how">Method</a>
-  </nav>
-</div></header>
+<div class="mark cap">
+  <!-- When the demo is on YouTube: set href and remove aria-disabled (two places) -->
+  <a class="demo-link" href="#" aria-disabled="true">Demo (soon)</a>
+  <a href="https://github.com/hryLiuYibo/AILT9019_Team11_Project">Code ↗</a>
+</div>
+<nav class="dots" id="dots" aria-label="Pages"></nav>
 
-<main class="wrap">
+<main>
 
-<section class="hero">
-  <h1 class="disp"><span>One item.</span><span>Two cities.</span><span>Two bins.</span></h1>
-  <div class="dek">
-    <p>A bilingual sorting helper for Shanghai and Hong Kong. Every answer comes from that city's own official rules, and links to them.</p>
-    <p class="zh">上海與香港垃圾分類助手</p>
-    <div class="facts mono">
-      <div><span>Shanghai</span><b>68 items · 2024 Guidelines</b></div>
-      <div><span>Hong Kong</span><b>45 items · EPD FAQ</b></div>
-      <div><span>Runs</span><b>offline · no API key</b></div>
+<section class="page p-title" data-name="Start">
+  <span class="tag cap">AILT9019 · Team 11</span>
+  <h1 class="disp"><span>One item.</span><span>Two cities.</span><span class="ac">Two bins.</span></h1>
+  <p class="lede">Shanghai and Hong Kong sort the same item differently. We built a helper that follows each city's own official rules.</p>
+  <div class="hint cap"><i></i>Scroll</div>
+</section>
+
+<section class="page p-sort" data-name="Try it">
+  <span class="tag cap">Try it</span>
+  <div class="picker" id="picker" role="toolbar" aria-label="Pick an item"></div>
+  <div class="stage" id="stage" aria-hidden="true"></div>
+  <div class="results">
+    <div class="res" data-city="shanghai" aria-live="polite"></div>
+    <div class="res" data-city="hongkong" aria-live="polite"></div>
+  </div>
+</section>
+
+<section class="page p-method" data-name="How">
+  <span class="tag cap">How it decides</span>
+  <h2 class="disp">Rules decide.<br><span class="ac">AI only rewords.</span></h2>
+  <div class="flow">
+    <svg viewBox="0 0 1100 170" role="img" aria-label="City, item, local rule, optional AI wording, bin and source">
+      <g stroke="rgba(236,232,223,.35)" stroke-width="2"><line x1="70" y1="60" x2="1030" y2="60"/></g>
+      <g>
+        <circle cx="70" cy="60" r="42" fill="#2462a3"/><circle cx="310" cy="60" r="42" fill="#bc931a"/>
+        <circle cx="550" cy="60" r="42" fill="#E94531"/>
+        <circle cx="790" cy="60" r="42" fill="#141413" stroke="rgba(236,232,223,.6)" stroke-width="2" stroke-dasharray="6 6"/>
+        <circle cx="1030" cy="60" r="42" fill="#4f8a5b"/>
+      </g>
+      <g fill="none" stroke="#141413" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M70 40c-10 0-16 7-16 15 0 11 16 25 16 25s16-14 16-25c0-8-6-15-16-15z"/><circle cx="70" cy="55" r="4"/>
+        <path d="M298 38h24v6l6 10v30h-36V54l6-10z"/>
+        <path d="M534 58l11 11 21-22"/>
+        <path d="M1012 46h36l-4 34h-28z M1008 46h44"/>
+      </g>
+      <g fill="none" stroke="rgba(236,232,223,.8)" stroke-width="2.5" stroke-linecap="round"><path d="M790 42v8M790 70v8M772 60h8M800 60h8M778 48l5 5M797 67l5 5M778 72l5-5M797 53l5-5"/></g>
+      <g text-anchor="middle" font-size="26">
+        <text x="70" y="140">City</text><text x="310" y="140">Item</text><text x="550" y="140">Local rule</text>
+        <text x="790" y="140">AI wording</text><text x="1030" y="140">Bin + source</text>
+      </g>
+      <g text-anchor="middle"><text class="sm" x="790" y="164">optional · off by default</text></g>
+    </svg>
+  </div>
+</section>
+
+<section class="page p-exits" data-name="Limits of guessing">
+  <span class="tag cap">When it won't guess</span>
+  <h2 class="disp">It asks<br><span class="ac">instead of guessing.</span></h2>
+  <div class="exits">
+    <div class="ex">
+      <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="56" fill="#79523b"/><path d="M60 30l14 24H46z M36 84l-8-14 12-20 M84 84l8-14-12-20 M44 88h32" fill="none" stroke="#ece8df" stroke-width="4" stroke-linejoin="round"/></svg>
+      <b>Just "plastic"?</b><span><em>?</em> Which item?</span>
+    </div>
+    <div class="ex">
+      <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="56" fill="#2462a3"/><path d="M60 28s-20 24-20 40a20 20 0 0 0 40 0c0-16-20-40-20-40z" fill="none" stroke="#ece8df" stroke-width="4"/></svg>
+      <b>Rinsed or dirty?</b><span><em>?</em> Asks the condition</span>
+    </div>
+    <div class="ex">
+      <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="56" fill="#6A483F"/><path d="M44 34c-9 0-15 7-15 15 0 11 15 25 15 25s15-14 15-25c0-8-6-15-15-15zM78 46c-9 0-15 7-15 15 0 11 15 25 15 25s15-14 15-25c0-8-6-15-15-15z" fill="none" stroke="#ece8df" stroke-width="4"/><path d="M30 96l60-60" stroke="#ece8df" stroke-width="4"/></svg>
+      <b>Other city's item</b><span><em>×</em> Never borrows a rule</span>
+    </div>
+    <div class="ex">
+      <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="56" fill="#bc931a"/><circle cx="60" cy="60" r="24" fill="none" stroke="#ece8df" stroke-width="4"/><path d="M60 48v24M52 54h12a6 6 0 0 1 0 12H52" fill="none" stroke="#ece8df" stroke-width="4"/><path d="M28 92l64-64" stroke="#ece8df" stroke-width="4"/></svg>
+      <b>Prices, bookings</b><span><em>×</em> Out of scope</span>
     </div>
   </div>
 </section>
 
-<section class="sorter" aria-label="Interactive sorter">
-  <div class="picker" id="picker" role="toolbar" aria-label="Pick an item"></div>
-  <div class="stage" id="stage" aria-hidden="true"><span class="hint cap">Fig. 1 — pick an item above</span></div>
-  <div class="verdicts">
-    <div class="v" data-city="shanghai" aria-live="polite"></div>
-    <div class="v" data-city="hongkong" aria-live="polite"></div>
+<section class="page p-run" data-name="Real run">
+  <span class="tag cap">The real app</span>
+  <div class="side">
+    <h2 class="disp">See it<br><span class="ac">run.</span></h2>
+    <div class="shotnav" id="shotnav" role="tablist"></div>
   </div>
-  <div class="provenance">
-    <div class="legend cap"><span><i style="background:var(--ink)"></i>Rule matched</span><span><i style="background:var(--ask)"></i>Asks first</span><span><i style="background:var(--stop)"></i>Won't guess</span></div>
-    <span class="cap">Every answer above is saved output of our classifier, <span style="text-transform:none">src/classify.py</span></span>
-  </div>
+  <div class="frame"><img id="shot" alt=""></div>
 </section>
 
-<section class="sec" id="how">
-  <div class="sec-h"><span class="cap">01 / Method</span><h2 class="disp">How it decides</h2><p class="note">The decision is plain code that runs offline. The only AI step is optional, and it cannot change the decision.</p></div>
-  <div class="steps5">
-    <div class="st"><span class="n cap">Step 1</span><b>Pick a city</b><p>Each city has its own dataset. They never mix.</p></div>
-    <div class="st"><span class="n cap">Step 2</span><b>Name the item</b><p>Chinese or English, with autocomplete. Nothing is auto-submitted.</p></div>
-    <div class="st"><span class="n cap">Step 3</span><b>Rule decides</b><p>Exact match against reviewed names, plus condition tags.</p></div>
-    <div class="st model"><span class="n cap">Step 4 · optional</span><b>AI rewords</b><p>DeepSeek chooses between two pre-written wordings. The facts are locked.</p></div>
-    <div class="st"><span class="n cap">Step 5</span><b>Bin + source</b><p>Destination, preparation, caveat and a link to the official source.</p></div>
-  </div>
-  <div class="key2 cap"><span><i></i>Built by our team</span><span><i class="d"></i>Existing model, off by default</span></div>
-  <div class="exits">
-    <span class="cap">When it won't answer</span>
-    <ul>
-      <li><i style="background:var(--ask)"></i><span><b>Material only.</b> "plastic" → asks which item</span></li>
-      <li><i style="background:var(--ask)"></i><span><b>Depends on condition.</b> Rinsed or dirty? Local collection?</span></li>
-      <li><i style="background:var(--stop)"></i><span><b>Not in this city.</b> Never borrows the other city's rule</span></li>
-      <li><i style="background:var(--stop)"></i><span><b>Out of scope.</b> Prices, bookings, medical waste</span></li>
-    </ul>
-  </div>
-</section>
-
-<section class="sec" id="run">
-  <div class="sec-h"><span class="cap">02 / Evidence</span><h2 class="disp">See it run</h2><p class="note">The real app, captured at 3× resolution. No mock-ups.</p></div>
-  <div class="viewer">
-    <div class="tabs" role="tablist" id="tabs"></div>
-    <figure class="shotbox" style="margin:0"><div class="bar cap"><span>localhost:8000</span><span>--offline</span></div>
-      <picture><source id="shotDark" media="(prefers-color-scheme: dark)"><img id="shot" alt=""></picture></figure>
-    <p class="proof cap">19 Nov 2026 · no API key · dark version via Chrome's automatic dark mode</p>
-  </div>
-</section>
-
-<section class="sec" id="try">
-  <div class="sec-h"><span class="cap">03 / Reproduce</span><h2 class="disp">Run it yourself</h2><p class="note">Clone the repository, run the tests, then start the app. Nothing to install.</p></div>
-  <div class="runs">
+<section class="page p-try" data-name="Run it">
+  <span class="tag cap">Reproduce</span>
+  <h2 class="disp">Clone. Test.<br><span class="ac">Run.</span></h2>
 <pre class="term"><span class="p">$</span> git clone https://github.com/hryLiuYibo/AILT9019_Team11_Project.git
 <span class="p">$</span> cd AILT9019_Team11_Project
-<span class="p">$</span> python tests/run_tests.py
-  checks: 55/55 passed
-<span class="ok">  result: ALL PASS</span>
-<span class="p">$</span> python src/app.py --offline
-  → http://localhost:8000</pre>
-    <dl class="spec">
-      <div><dt class="cap">Python</dt><dd>3.10 or newer, standard library only</dd></div>
-      <div><dt class="cap">API key</dt><dd>Not needed. AI wording is opt-in.</dd></div>
-      <div><dt class="cap">Network</dt><dd>Not needed. The rules ship with the code.</dd></div>
-      <div><dt class="cap">Repository</dt><dd><a href="https://github.com/hryLiuYibo/AILT9019_Team11_Project">hryLiuYibo/AILT9019_Team11_Project</a> <span class="cap">teaching team access</span></dd></div>
-    </dl>
-  </div>
+<span class="p">$</span> python tests/run_tests.py      <span class="o"># ALL PASS</span>
+<span class="p">$</span> python src/app.py --offline    <span class="o"># localhost:8000</span></pre>
+  <div class="chips"><span>Python 3.10+</span><span>No installs</span><span>No API key</span><span>Offline</span></div>
 </section>
 
-<section class="sec" id="results">
-  <div class="sec-h"><span class="cap">04 / Results</span><h2 class="disp">What we measured</h2><p class="note">Right city, right bin, right source for known items. For anything else, a question instead of a guess.</p></div>
+<section class="page p-results" data-name="Results">
+  <span class="tag cap">Results</span>
   <div class="nums">
-    <div class="num"><div class="big disp">84<small>/84</small></div><p>Shanghai test cases pass</p></div>
-    <div class="num"><div class="big disp">99<small>/99</small></div><p>Hong Kong test cases pass</p></div>
-    <div class="num"><div class="big disp">19<small>/19</small></div><p>Condition-tag cases, conflicts refused</p></div>
-    <div class="num"><div class="big disp">0<small>/10</small></div><p>Ambiguous inputs wrongly given a bin</p></div>
+    <div class="num"><div class="v disp">84<small>/84</small></div><p>Shanghai tests</p></div>
+    <div class="num"><div class="v disp">99<small>/99</small></div><p>Hong Kong tests</p></div>
+    <div class="num"><div class="v disp">19<small>/19</small></div><p>Condition tests</p></div>
+    <div class="num"><div class="v disp ac">0</div><p>Wrong guesses on 10 ambiguous inputs</p></div>
   </div>
   <div class="strips">
-    <div class="strip"><div class="lab"><span class="cap">Held-out phrasings · found by name or top-3 suggestion</span><b>10/20</b></div><div class="row" data-k="10"></div></div>
-    <div class="strip"><div class="lab"><span class="cap">Same phrasings · correct once the item is named</span><b>20/20</b></div><div class="row" data-k="20"></div></div>
-  </div>
-  <p class="evi cap" style="text-transform:none;letter-spacing:.01em">Per city; the held-out set was never used for tuning. Sources: tests/run_tests.py, tools/evaluate_recall.py, offline run, 13 Nov 2026. Optional AI wording: one live DeepSeek query passed with facts unchanged (a smoke test only).</p>
-</section>
-
-<section class="sec" id="fails">
-  <div class="sec-h"><span class="cap">05 / Limits</span><h2 class="disp">Where it fails</h2><p class="note">Free wording is the weak spot. We chose a safe miss over a confident wrong bin.</p></div>
-  <div class="fails">
-    <div class="ticket">
-      <div class="row"><span class="cap">Input</span><span class="in">Hong Kong — used PET bottle from the vending machine</span></div>
-      <div class="row"><span class="cap">Output</span><span class="out">✕ Not in the Hong Kong corpus. No Shanghai rule is borrowed.</span></div>
-      <div class="row"><span class="cap">Expected</span><span>Plastic recycling, brown bin</span></div>
-      <div class="row"><span class="cap">Cause</span><span>Exact matching only; no fuzzy or semantic search</span></div>
-      <div class="row"><span class="cap">Next</span><span>Fuzzy matches offered as suggestions only, retested on the same held-out set</span></div>
-    </div>
-    <div class="lims">
-      <div class="lim"><span class="big disp">113</span><p>items in total. Hong Kong food waste is not covered yet.</p></div>
-      <div class="lim"><span class="big disp">13.11</span><p>Rules were checked on this date and may change. Signs at the bin come first.</p></div>
-      <div class="lim"><span class="big disp">0</span><p>real photos tested, so no photo accuracy is claimed.</p></div>
-      <div class="lim"><span class="big disp">0</span><p>user studies so far.</p></div>
-    </div>
+    <div class="strip"><span class="cap">Unseen wording, found · 10/20</span><div class="row" data-k="10"></div></div>
+    <div class="strip"><span class="cap">Once named, correct · 20/20</span><div class="row" data-k="20"></div></div>
   </div>
 </section>
 
-<section class="sec" id="team">
-  <div class="sec-h"><span class="cap">06 / Team</span><h2 class="disp">Team 11</h2></div>
-  <div class="team">
-    <div class="mem disp"><i style="background:#173B6B"></i>Liu<br>Yibo</div>
-    <div class="mem disp"><i style="background:#E94531"></i>Lu<br>Song Lun</div>
-    <div class="mem disp"><i style="background:#79523b"></i>Wen<br>Sum Yee</div>
-    <div class="mem disp"><i style="background:#bc931a"></i>Wang<br>Zixuan</div>
+<section class="page p-fails" data-name="Failure">
+  <span class="tag cap">Where it fails</span>
+  <div class="chat">
+    <div class="q"><span class="cap">Hong Kong</span>"used PET bottle from the vending machine"</div>
+    <div class="a"><span class="ac">×</span> Not covered.</div>
+    <p class="why">It is a plastic bottle, but we match exact names only. A safe miss beats a confident wrong bin.</p>
   </div>
-  <div class="colophon">
-    <div><span class="cap">Course</span>AILT9019 AI Literacy for Computing and Data Science, The University of Hong Kong, 2026. Course prototype, not official disposal advice.</div>
-    <div><span class="cap">Sources</span><a href="https://lhsr.sh.gov.cn/srgl/20240806/40b9feaa-53db-472f-8a6b-2c3cf0465def.html">Shanghai Household Waste Sorting Guidelines (2024)</a><br><a href="https://www.wastereduction.gov.hk/en-hk/recycling-faq/greencommunity-faq">HK EPD GREEN@COMMUNITY FAQ</a></div>
-    <div><span class="cap">Set in</span>Archivo and JetBrains Mono (SIL Open Font License). Animation by PixiJS (MIT).</div>
+  <div class="limits"><span><b>113</b> items</span><span><b>No</b> HK food waste yet</span><span><b>0</b> photos tested</span><span><b>0</b> user studies</span></div>
+</section>
+
+<section class="page p-team" data-name="Team">
+  <span class="tag cap">Team 11</span>
+  <h2 class="disp">Thanks.</h2>
+  <div class="names">
+    <div class="disp"><i style="background:#2462a3"></i>Liu<br>Yibo</div>
+    <div class="disp"><i style="background:#E94531"></i>Lu<br>Song Lun</div>
+    <div class="disp"><i style="background:#bc931a"></i>Wen<br>Sum Yee</div>
+    <div class="disp"><i style="background:#4f8a5b"></i>Wang<br>Zixuan</div>
   </div>
+  <div class="links">
+    <a class="demo-link" href="#" aria-disabled="true">Demo video (soon)</a>
+    <a href="https://github.com/hryLiuYibo/AILT9019_Team11_Project">Code repository ↗</a>
+  </div>
+  <div class="foot">AILT9019 · HKU · 2026 · Course prototype, not official advice. Rules: <a href="https://lhsr.sh.gov.cn/srgl/20240806/40b9feaa-53db-472f-8a6b-2c3cf0465def.html">Shanghai 2024 Guidelines</a>, <a href="https://www.wastereduction.gov.hk/en-hk/recycling-faq/greencommunity-faq">HK EPD FAQ</a>. Results: offline run, 13 Nov 2026. Type: Archivo, JetBrains Mono (OFL). Animation: PixiJS (MIT).</div>
 </section>
 
 </main>
@@ -357,44 +290,64 @@ const DATA = window.DATA;
 const CITIES = ["shanghai","hongkong"];
 const CNAME = {shanghai:"Shanghai", hongkong:"Hong Kong"};
 const BINS = {
-  shanghai:[["REC","Recyclable","#173B6B"],["HAZ","Hazardous","#E94531"],["WET","Wet","#6A483F"],["DRY","Dry","#2C2B28"]],
-  hongkong:[["PAPER","Paper","#2462a3"],["METAL","Metal","#bc931a"],["PLASTIC","Plastic","#79523b"],["GC","Green@Comm.","#4f8a5b"],["GENERAL","General","#6e6e6e"]]
+  shanghai:[["REC","Recyclable","#1f4f8f"],["HAZ","Hazardous","#E94531"],["WET","Wet","#7a5444"],["DRY","Dry","#3a3936"]],
+  hongkong:[["PAPER","Paper","#2462a3"],["METAL","Metal","#bc931a"],["PLASTIC","Plastic","#8a5d40"],["GC","Green@Comm.","#4f8a5b"],["GENERAL","General","#7a7a7a"]]
 };
 const GC = ["GLASS","CARTON","FOAM","BATTERY","LAMP"];
-const binKey = code => GC.includes(code) ? "GC" : code;
-const binColor = (city, code) => (BINS[city].find(b => b[0] === binKey(code)) || [,,"#888"])[2];
-const LABEL = {"plastic drink bottle":"Plastic bottle","newspaper":"Newspaper","cardboard box":"Cardboard box","rechargeable battery":"Battery","fluorescent tube":"Fluorescent tube","milk carton":"Milk carton","styrofoam":"Styrofoam","fruit peel":"Fruit peel","plastic":"just “plastic”"};
+const binKey = c => GC.includes(c) ? "GC" : c;
+const binColor = (city, c) => (BINS[city].find(b => b[0] === binKey(c)) || [,,"#888"])[2];
+const LABEL = {"plastic drink bottle":"Plastic bottle","newspaper":"Newspaper","cardboard box":"Cardboard box","rechargeable battery":"Battery","fluorescent tube":"Fluorescent tube","milk carton":"Milk carton","styrofoam":"Styrofoam","fruit peel":"Fruit peel","plastic":"“plastic”"};
 const $ = (s, el = document) => el.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const kind = r => r.s === "matched" ? "hit" : (r.s === "needs_condition" || r.s === "needs_item") ? "ask" : "stop";
+const shortMsg = (city, r) => r.s === "needs_item" ? "Which item? A material alone is not enough."
+  : r.s === "needs_condition" ? String(r.msg).replace(/\s*(Select a condition\.|Choose rinsed or food residue\.)$/, "")
+  : `Not in ${CNAME[city]} data. No rule borrowed.`;
 
-/* ---------- DOM verdicts (always present; the canvas is decoration) ---------- */
+/* ---------- pages, dots, keys ---------- */
+const pages = [...document.querySelectorAll(".page")];
+const dots = $("#dots");
+dots.innerHTML = pages.map((p, i) => `<button aria-label="${esc(p.dataset.name)}" data-i="${i}"></button>`).join("");
+let cur = 0;
+const go = i => { i = Math.max(0, Math.min(pages.length - 1, i)); pages[i].scrollIntoView({ behavior: reduced ? "auto" : "smooth" }); };
+dots.addEventListener("click", e => { const b = e.target.closest("button"); if (b) go(+b.dataset.i); });
+const io = new IntersectionObserver(es => es.forEach(e => {
+  e.target.classList.toggle("on", e.isIntersecting);
+  if (e.isIntersecting) { cur = pages.indexOf(e.target); dots.querySelectorAll("button").forEach((b, j) => b.setAttribute("aria-current", j === cur)); onPage(cur); }
+}), { threshold: .6 });
+pages.forEach(p => io.observe(p));
+addEventListener("keydown", e => {
+  if (e.target.closest("input,textarea")) return;
+  if (["ArrowDown","ArrowRight","PageDown"," "].includes(e.key)) { e.preventDefault(); go(cur + 1); }
+  if (["ArrowUp","ArrowLeft","PageUp"].includes(e.key)) { e.preventDefault(); go(cur - 1); }
+  if (e.key === "Home") { e.preventDefault(); go(0); }
+  if (e.key === "End") { e.preventDefault(); go(pages.length - 1); }
+});
+const SORT_PAGE = 1;
+
+/* ---------- sorter results ---------- */
 const state = { item: 0, sel: { shanghai: null, hongkong: null } };
-const current = city => { const b = DATA[state.item][city]; const s = state.sel[city]; return s == null ? b : b.opts[s].r; };
-
-function renderVerdict(city) {
-  const el = $(`.v[data-city=${city}]`), base = DATA[state.item][city], r = current(city);
-  let h = `<h3 class="city disp">${CNAME[city]}</h3>`;
+const current = city => { const b = DATA[state.item][city], s = state.sel[city]; return s == null ? b : b.opts[s].r; };
+function renderRes(city) {
+  const el = $(`.res[data-city=${city}]`), base = DATA[state.item][city], r = current(city);
+  let h = `<span class="cap">${CNAME[city]}</span>`;
   if (kind(r) === "hit") {
-    h += `<div class="cat" style="--c:${binColor(city, r.code)}"><i></i><span>${esc(r.cat)}</span></div>
-          <p class="prep">${esc(r.prep)}</p>
-          <a class="src mono" href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.src)} ↗</a>`;
+    h += `<div class="big"><i style="background:${binColor(city, r.code)}"></i>${esc(r.cat)}</div>
+          <div class="sub"><a href="${esc(r.url)}" target="_blank" rel="noopener">source ↗</a></div>`;
   } else {
-    const ask = kind(r) === "ask";
-    h += `<span class="flag ${ask ? "ask" : "stop"}">${ask ? "Asks first" : "Won't guess"}</span><p class="msg">${esc(r.msg)}</p>`;
+    h += `<div class="big"><span class="ac" style="font-family:var(--mono)">${kind(r) === "ask" ? "?" : "×"}</span>${esc(shortMsg(city, r))}</div>`;
   }
-  if (base.opts) h += `<div class="opts">${base.opts.map((o, j) => `<button class="opt" data-city="${city}" data-j="${j}" aria-pressed="${state.sel[city] === j}">${esc(o.label)}</button>`).join("")}</div>`;
+  if (base.opts) h += `<div class="sub">${base.opts.map((o, j) => `<button class="opt" data-city="${city}" data-j="${j}" aria-pressed="${state.sel[city] === j}">${esc(o.label)}</button>`).join("")}</div>`;
   el.innerHTML = h;
 }
-
 const picker = $("#picker");
-picker.innerHTML = DATA.map((r, i) => `<button class="pick${r.icon === "material" ? " mat" : ""}" data-i="${i}" aria-pressed="false">${LABEL[r.q] || r.q}</button>`).join("");
-
+picker.innerHTML = DATA.map((r, i) => `<button class="pick" data-i="${i}" aria-pressed="false">${LABEL[r.q] || r.q}</button>`).join("");
+let sorter = null;
 function choose(i, fromUser) {
   state.item = i; state.sel = { shanghai: null, hongkong: null };
   picker.querySelectorAll(".pick").forEach(b => b.setAttribute("aria-pressed", b.dataset.i == i));
-  CITIES.forEach(renderVerdict);
+  CITIES.forEach(renderRes);
   if (fromUser) stopAuto();
   sorter && sorter.play(i);
 }
@@ -403,24 +356,20 @@ document.addEventListener("click", e => {
   const b = e.target.closest(".opt"); if (!b) return;
   const city = b.dataset.city, j = +b.dataset.j;
   state.sel[city] = state.sel[city] === j ? null : j;
-  renderVerdict(city); stopAuto();
+  renderRes(city); stopAuto();
   sorter && sorter.replayCity(city, current(city));
 });
-
-/* ---------- auto-cycle while the sorter is on screen ---------- */
-let autoTimer = null, auto = !reduced, onScreen = false;
+let auto = !reduced, autoTimer = null, played = false;
 function stopAuto(){ auto = false; clearInterval(autoTimer); }
-function tickAuto(){ if (auto && onScreen && !document.hidden) choose((state.item + 1) % DATA.length, false); }
-new IntersectionObserver(es => { onScreen = es[0].isIntersecting; }, { threshold: .35 }).observe($("#stage"));
-if (auto) autoTimer = setInterval(tickAuto, 4200);
-
-/* ---------- PixiJS sorter ---------- */
-let sorter = null;
+function onPage(i) {
+  if (i === SORT_PAGE && sorter && !played) { played = true; sorter.play(state.item); }
+  if (i === SORT_PAGE && auto && !autoTimer) autoTimer = setInterval(() => { if (auto && cur === SORT_PAGE && !document.hidden) choose((state.item + 1) % DATA.length, false); }, 4200);
+}
 choose(0, false);
 
 window.addEventListener("DOMContentLoaded", async () => {
   if (!window.PIXI) return;
-  try { sorter = await makeSorter($("#stage")); sorter.play(state.item, true); }
+  try { sorter = await makeSorter($("#stage")); if (cur === SORT_PAGE) { played = true; sorter.play(state.item); } }
   catch (e) { console.warn("sorter disabled:", e); }
 });
 
@@ -430,166 +379,127 @@ async function makeSorter(host) {
   await app.init({ resizeTo: host, antialias: true, backgroundAlpha: 0, resolution: Math.min(devicePixelRatio || 1, 2), autoDensity: true });
   host.prepend(app.canvas);
   try { await document.fonts.load('11px "JB Mono"'); } catch {}
+  const C = { fg: "#ece8df", bg: "#141413", ac: "#ff5a36", dim: "rgba(236,232,223,.5)" };
 
-  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
-  let C = {};
-  const readColors = () => { C = { ink: css("--ink"), ink2: css("--ink2"), mute: css("--mute"), hair: css("--hair"), paper: css("--paper"), ask: css("--ask"), stop: css("--stop") }; };
-
-  const tweens = [];
-  const tween = (dur, upd, done) => { const t = { t: 0, dur: reduced ? 1 : dur, upd, done }; tweens.push(t); return t; };
-  const parts = [];
-  let last = performance.now();
+  const tweens = [], parts = [];
+  const tween = (dur, upd, done) => { tweens.push({ t: 0, dur: reduced ? 1 : dur, upd, done }); };
+  let last = performance.now(), pulse = [];
   app.ticker.add(() => {
     const now = performance.now(), dt = Math.min(1000, now - last); last = now;
     for (let i = tweens.length - 1; i >= 0; i--) { const t = tweens[i]; t.t += dt; const p = Math.min(1, t.t / t.dur); t.upd(p); if (p >= 1) { tweens.splice(i, 1); t.done && t.done(); } }
     for (let i = parts.length - 1; i >= 0; i--) { const q = parts[i]; q.life -= dt; q.vy += 0.0016 * dt; q.g.x += q.vx * dt; q.g.y += q.vy * dt; q.g.rotation += q.vr * dt; q.g.alpha = Math.max(0, q.life / q.max); if (q.life <= 0) { q.g.destroy(); parts.splice(i, 1); } }
-    pulse.forEach(p => { p.ph += dt / 600; p.ring.scale.set(1 + 0.12 * Math.sin(p.ph * Math.PI * 2)); p.ring.alpha = 0.6 + 0.4 * Math.sin(p.ph * Math.PI * 2); });
+    pulse.forEach(p => { p.ph += dt / 650; const s = Math.sin(p.ph * Math.PI * 2); p.ring.scale.set(1 + 0.08 * s); p.ring.alpha = 0.65 + 0.35 * s; });
   });
-  const ease = { io: p => p < .5 ? 4*p*p*p : 1 - Math.pow(-2*p + 2, 3)/2, in: p => p*p, out: p => 1 - (1-p)*(1-p), back: p => 1 + 2.2*Math.pow(p-1,3) + 1.2*Math.pow(p-1,2) };
+  const ease = { io: p => p < .5 ? 4*p*p*p : 1 - Math.pow(-2*p + 2, 3)/2, in: p => p*p, back: p => 1 + 2.2*Math.pow(p-1,3) + 1.2*Math.pow(p-1,2) };
   const quad = (a, c, b, t) => ({ x: (1-t)*(1-t)*a.x + 2*(1-t)*t*c.x + t*t*b.x, y: (1-t)*(1-t)*a.y + 2*(1-t)*t*c.y + t*t*b.y });
+  const txt = (s, size, color, extra = {}) => new P.Text({ text: s, style: { fontFamily: '"JB Mono", ui-monospace, monospace', fontSize: size, fill: color, letterSpacing: 1.4, ...extra } });
 
-  let L, layer, trails, bins = {}, tokens = {}, pulse = [];
-
-  function layout() {
-    const w = host.clientWidth, h = host.clientHeight, side = w >= 760;
-    const chute = { x: w/2, y: 40 }, split = { x: w/2, y: side ? 130 : 112 };
-    const regions = side
-      ? { shanghai: { x0: 0, x1: w/2 - 28, base: h - 70 }, hongkong: { x0: w/2 + 28, x1: w, base: h - 70 } }
-      : { shanghai: { x0: 0, x1: w, base: h * 0.52 }, hongkong: { x0: 0, x1: w, base: h - 56 } };
-    return { w, h, side, chute, split, regions };
-  }
-
-  function txt(s, size, color, extra = {}) { return new P.Text({ text: s, style: { fontFamily: '"JB Mono", ui-monospace, monospace', fontSize: size, fill: color, letterSpacing: 1.2, ...extra } }); }
-
+  let L, layer, trails, bins = {}, tokens = {};
   function build() {
-    readColors();
     app.stage.removeChildren().forEach(c => c.destroy({ children: true }));
     tweens.length = 0; parts.length = 0; pulse = []; tokens = {};
-    L = layout();
+    const w = host.clientWidth, h = host.clientHeight, base = h - 40;
+    L = { w, h, chute: { x: w/2, y: 34 }, split: { x: w/2, y: Math.max(90, h * 0.26) },
+          regions: { shanghai: { x0: 0, x1: w/2 - 40, base }, hongkong: { x0: w/2 + 40, x1: w, base } } };
     const deco = new P.Graphics(); app.stage.addChild(deco);
-    // chute
-    deco.moveTo(L.chute.x - 34, 8).lineTo(L.chute.x - 12, L.chute.y).lineTo(L.chute.x + 12, L.chute.y).lineTo(L.chute.x + 34, 8).stroke({ width: 1.5, color: C.ink });
-    // divider / ground lines
-    if (L.side) {
-      for (let y = L.split.y + 20; y < L.h - 8; y += 9) deco.moveTo(L.w/2, y).lineTo(L.w/2, y + 4);
-      deco.stroke({ width: 1, color: C.mute });
-    }
+    deco.moveTo(L.chute.x - 40, 4).lineTo(L.chute.x - 14, L.chute.y).lineTo(L.chute.x + 14, L.chute.y).lineTo(L.chute.x + 40, 4).stroke({ width: 1.5, color: C.fg, alpha: .6 });
+    for (let y = L.split.y + 30; y < h - 10; y += 10) deco.moveTo(w/2, y).lineTo(w/2, y + 4);
+    deco.stroke({ width: 1, color: C.fg, alpha: .18 });
     trails = new P.Graphics(); app.stage.addChild(trails);
     layer = new P.Container(); app.stage.addChild(layer);
     CITIES.forEach(city => {
       const R = L.regions[city], set = BINS[city], n = set.length, span = R.x1 - R.x0;
-      const uslot = Math.min(span / 5, 120), slot = Math.min(span / n, uslot * 1.25), bw = Math.max(26, Math.min(64, uslot * 0.6)), bh = bw * 1.18;
+      const uslot = Math.min(span / 5, 130), slot = Math.min(span / n, uslot * 1.2);
+      const bw = Math.max(30, Math.min(78, uslot * 0.62)), bh = bw * 1.2;
       const startX = R.x0 + (span - slot * n) / 2 + slot / 2;
-      const lab = txt(CNAME[city].toUpperCase(), 11, C.mute); lab.x = R.x0 + (L.side ? 0 : 0); lab.y = R.base - bh - (L.side ? 120 : 92); layer.addChild(lab);
-      deco.moveTo(R.x0, R.base + 0.5).lineTo(R.x1, R.base + 0.5).stroke({ width: 1.5, color: C.ink });
+      deco.moveTo(R.x0, R.base + .5).lineTo(R.x1, R.base + .5).stroke({ width: 1.5, color: C.fg, alpha: .35 });
       bins[city] = set.map(([k, name, col], i) => {
         const c = new P.Container(); c.x = startX + i * slot; c.y = R.base; layer.addChild(c);
-        const body = new P.Graphics(); body.rect(-bw/2, -bh, bw, bh).fill(col);
-        body.rect(-bw*0.2, -bh*0.72, bw*0.4, 2.5).fill({ color: 0xffffff, alpha: .55 });
-        if (k === "DRY" || k === "GENERAL") body.rect(-bw/2, -bh, bw, bh).stroke({ width: 1, color: C.hair, alignment: 1 });
+        const body = new P.Graphics(); body.roundRect(-bw/2, -bh, bw, bh, 3).fill(col);
+        body.rect(-bw*0.2, -bh*0.72, bw*0.4, 3).fill({ color: 0xffffff, alpha: .5 });
         c.addChild(body);
-        const lid = new P.Container(); lid.x = -bw/2 - 3; lid.y = -bh - 1; c.addChild(lid);
-        const lg = new P.Graphics(); lg.rect(0, -6, bw + 6, 6).fill(col); lg.rect(0, -6, bw + 6, 6).fill({ color: 0xffffff, alpha: .18 }); lid.addChild(lg);
-        const t = txt(name.toUpperCase(), Math.max(8, Math.min(10, bw / 6)), C.ink2 || C.ink); t.anchor.set(.5, 0); t.y = 10; c.addChild(t);
+        const lid = new P.Container(); lid.x = -bw/2 - 4; lid.y = -bh - 1; c.addChild(lid);
+        const lg = new P.Graphics(); lg.roundRect(0, -7, bw + 8, 7, 2).fill(col); lg.roundRect(0, -7, bw + 8, 7, 2).fill({ color: 0xffffff, alpha: .2 }); lid.addChild(lg);
+        const t = txt(name.toUpperCase(), 10, C.fg); t.alpha = .55; t.anchor.set(.5, 0); t.y = 10; c.addChild(t);
         return { k, col, c, lid, bw, bh, label: t };
       });
     });
   }
-
   function makeToken(label) {
     const c = new P.Container();
-    const t = txt(label.toUpperCase(), 11, C.paper, { fontWeight: "500" }); t.anchor.set(.5);
-    const g = new P.Graphics(); const w = t.width + 18, h = 24; g.rect(-w/2, -h/2, w, h).fill(C.ink);
+    const t = txt(label.toUpperCase(), 12, C.bg, { fontWeight: "500" }); t.anchor.set(.5);
+    const g = new P.Graphics(), w = t.width + 22, hh = 28; g.roundRect(-w/2, -hh/2, w, hh, hh/2).fill(C.fg);
     c.addChild(g, t); c.w = w; layer.addChild(c); return c;
   }
-
-  function dimBins(city, keep) {
-    bins[city].forEach(b => { const a0 = b.c.alpha, a1 = keep == null ? 0.22 : (b.k === keep ? 1 : 0.22); tween(300, p => b.c.alpha = a0 + (a1 - a0) * p); });
-  }
-  function resetBins() { CITIES.forEach(city => bins[city].forEach(b => { b.c.alpha = 1; b.lid.rotation = 0; b.c.scale.set(1); })); }
-
+  const dimBins = (city, keep) => bins[city].forEach(b => { const a0 = b.c.alpha, a1 = keep == null ? .2 : (b.k === keep ? 1 : .2); tween(300, p => b.c.alpha = a0 + (a1 - a0) * p); b.label.alpha = b.k === keep ? 1 : .55; });
+  const resetBins = () => CITIES.forEach(city => bins[city].forEach(b => { b.c.alpha = 1; b.lid.rotation = 0; b.c.scale.set(1); b.label.alpha = .55; }));
   function burst(x, y, col) {
     if (reduced) return;
-    for (let i = 0; i < 16; i++) { const g = new P.Graphics(); const s = 3 + Math.random()*4; g.rect(-s/2, -s/2, s, s).fill(col); g.x = x; g.y = y; layer.addChild(g);
-      const a = -Math.PI/2 + (Math.random() - .5) * 2.2, v = .12 + Math.random() * .22; parts.push({ g, vx: Math.cos(a) * v, vy: Math.sin(a) * v, vr: (Math.random()-.5) * .02, life: 700 + Math.random()*300, max: 1000 }); }
+    for (let i = 0; i < 18; i++) { const g = new P.Graphics(), s = 3 + Math.random()*5; g.rect(-s/2, -s/2, s, s).fill(col); g.x = x; g.y = y; layer.addChild(g);
+      const a = -Math.PI/2 + (Math.random() - .5) * 2.2, v = .12 + Math.random() * .24; parts.push({ g, vx: Math.cos(a) * v, vy: Math.sin(a) * v, vr: (Math.random()-.5) * .02, life: 700 + Math.random()*400, max: 1100 }); }
   }
-
-  function hover(city) { const R = L.regions[city], bh = bins[city][0].bh; return { x: (R.x0 + R.x1) / 2, y: R.base - bh - (L.side ? 66 : 46) }; }
-
+  const hover = city => { const R = L.regions[city], bh = bins[city][0].bh; return { x: (R.x0 + R.x1) / 2, y: R.base - bh - 80 }; };
   function sendTo(city, tok, from, r) {
     pulse = pulse.filter(p => { if (p.city === city) { p.ring.destroy(); return false; } return true; });
     const k = kind(r);
     if (k === "hit") {
       const b = bins[city].find(b => b.k === binKey(r.code));
-      const to = { x: b.c.x, y: b.c.y - b.bh - 16 };
-      const ctrl = { x: to.x, y: from.y + (L.side ? 10 : 0) };
+      const to = { x: b.c.x, y: b.c.y - b.bh - 18 }, ctrl = { x: to.x, y: from.y };
       trails.moveTo(from.x, from.y);
-      for (let i = 1; i <= 24; i++) { const q = quad(from, ctrl, to, i/24); if (i % 2) trails.lineTo(q.x, q.y); else trails.moveTo(q.x, q.y); }
-      trails.stroke({ width: 1.5, color: b.col, alpha: .8 });
+      for (let i = 1; i <= 26; i++) { const q = quad(from, ctrl, to, i/26); if (i % 2) trails.lineTo(q.x, q.y); else trails.moveTo(q.x, q.y); }
+      trails.stroke({ width: 2, color: b.col, alpha: .9 });
       dimBins(city, b.k);
-      tween(720, p => { const q = quad(from, ctrl, to, ease.io(p)); tok.x = q.x; tok.y = q.y; if (p > .7) b.lid.rotation = -1.1 * Math.min(1, (p - .7) / .3); }, () => {
-        tween(180, p => { tok.y = to.y + 22 * ease.in(p); tok.scale.set(1 - .7 * p); tok.alpha = 1 - p; }, () => {
+      tween(760, p => { const q = quad(from, ctrl, to, ease.io(p)); tok.x = q.x; tok.y = q.y; if (p > .7) b.lid.rotation = -1.1 * Math.min(1, (p - .7) / .3); }, () => {
+        tween(180, p => { tok.y = to.y + 24 * ease.in(p); tok.scale.set(1 - .7 * p); tok.alpha = 1 - p; }, () => {
           tok.destroy(); burst(b.c.x, b.c.y - b.bh, b.col);
-          tween(420, p => b.lid.rotation = -1.1 * (1 - ease.back(p)));
-          tween(300, p => b.c.scale.set(1, 1 - .08 * Math.sin(p * Math.PI)));
+          tween(440, p => b.lid.rotation = -1.1 * (1 - ease.back(p)));
+          tween(320, p => b.c.scale.set(1, 1 - .08 * Math.sin(p * Math.PI)));
         });
       });
     } else {
       const to = hover(city), ctrl = { x: to.x, y: from.y };
       dimBins(city, null);
-      tween(640, p => { const q = quad(from, ctrl, to, ease.io(p)); tok.x = q.x; tok.y = q.y; }, () => {
-        const col = k === "ask" ? C.ask : C.stop;
-        const ring = new P.Graphics(); ring.rect(-tok.w/2 - 7, -19, tok.w + 14, 38).stroke({ width: 1.5, color: col }); ring.x = tok.x; ring.y = tok.y; layer.addChildAt(ring, 0);
-        const mark = txt(k === "ask" ? "?" : "×", 22, col, { fontWeight: "500" }); mark.anchor.set(.5); mark.y = -38; ring.addChild(mark);
+      tween(680, p => { const q = quad(from, ctrl, to, ease.io(p)); tok.x = q.x; tok.y = q.y; }, () => {
+        const ring = new P.Graphics(); ring.roundRect(-tok.w/2 - 8, -22, tok.w + 16, 44, 22).stroke({ width: 2, color: C.ac }); ring.x = tok.x; ring.y = tok.y; layer.addChildAt(ring, 0);
+        const mark = txt(k === "ask" ? "?" : "×", 26, C.ac, { fontWeight: "500" }); mark.anchor.set(.5); mark.y = -46; ring.addChild(mark);
         if (k === "ask") pulse.push({ city, ring, ph: 0 });
-        else { const x0 = tok.x; tween(380, p => { tok.x = x0 + Math.sin(p * Math.PI * 6) * 6 * (1 - p); }, () => tween(500, p => { tok.alpha = 1 - p * .75; })); pulse.push({ city, ring, ph: .25 }); }
+        else { const x0 = tok.x; tween(400, p => { tok.x = x0 + Math.sin(p * Math.PI * 6) * 7 * (1 - p); }, () => tween(500, p => { tok.alpha = 1 - p * .75; })); }
       });
     }
   }
-
   function play(i) {
-    if (!L) build();
     tweens.length = 0; trails.clear();
     Object.values(tokens).forEach(t => t && !t.destroyed && t.destroy({ children: true }));
     pulse.forEach(p => p.ring.destroy()); pulse = []; tokens = {};
     resetBins();
-    const row = DATA[i], label = LABEL[row.q] || row.q;
-    const tok = makeToken(label); tok.x = L.chute.x; tok.y = -20;
-    tween(380, p => { tok.y = -20 + (L.split.y + 20) * ease.in(p); }, () => {
-      const pair = CITIES.map(city => { const t = city === "shanghai" ? tok : makeToken(label); t.x = L.split.x; t.y = L.split.y; tokens[city] = t; return t; });
-      CITIES.forEach((city, j) => sendTo(city, pair[j], { x: L.split.x, y: L.split.y }, current(city)));
+    const label = LABEL[DATA[i].q] || DATA[i].q, tok = makeToken(label);
+    tok.x = L.chute.x; tok.y = -24;
+    tween(400, p => { tok.y = -24 + (L.split.y + 24) * ease.in(p); }, () => {
+      CITIES.forEach(city => { const t = city === "shanghai" ? tok : makeToken(label); t.x = L.split.x; t.y = L.split.y; tokens[city] = t; sendTo(city, t, { x: L.split.x, y: L.split.y }, current(city)); });
     });
   }
   function replayCity(city, r) {
-    if (!L) return;
-    const old = tokens[city];
-    const from = old && !old.destroyed ? { x: old.x, y: old.y } : hover(city);
+    const old = tokens[city], from = old && !old.destroyed ? { x: old.x, y: old.y } : hover(city);
     if (old && !old.destroyed) old.destroy({ children: true });
     const t = makeToken(LABEL[DATA[state.item].q] || DATA[state.item].q); t.x = from.x; t.y = from.y; tokens[city] = t;
     bins[city].forEach(b => { b.lid.rotation = 0; b.c.alpha = 1; });
     sendTo(city, t, from, r);
   }
-
-  let rz; new ResizeObserver(() => { clearTimeout(rz); rz = setTimeout(() => { build(); play(state.item); }, 120); }).observe(host);
-  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { build(); play(state.item); });
+  let rz; new ResizeObserver(() => { clearTimeout(rz); rz = setTimeout(() => { build(); play(state.item); }, 150); }).observe(host);
   build();
   return { play, replayCity };
 }
 
 /* ---------- screenshots ---------- */
-const SHOTS = [
-  ["shanghai_bottle","Shanghai — plastic bottle","Recyclable, blue bin","Shanghai result for plastic bottle: Recyclable Waste, blue bin, with preparation and source"],
-  ["hongkong_bottle","Hong Kong — same input","Plastic, brown bin","Hong Kong result for plastic bottle: plastic recycling, brown bin, with caveat and EPD FAQ Q6 source"],
-  ["autocomplete","Typing 膠","Bilingual suggestions","Typing 膠 lists six bilingual item suggestions"],
-  ["material_only","Typing “plastic”","Asks for the item","Input plastic returns a follow-up question instead of a category"]
-];
-const tabs = $("#tabs"), shot = $("#shot"), shotDark = $("#shotDark");
-tabs.innerHTML = SHOTS.map((s, i) => `<button class="tab" role="tab" data-i="${i}" aria-selected="false"><span class="n mono">${String(i+1).padStart(2,"0")}</span><span>${esc(s[1])}<em>${esc(s[2])}</em></span></button>`).join("");
-function showShot(i){ tabs.querySelectorAll(".tab").forEach(b => b.setAttribute("aria-selected", b.dataset.i == i)); shotDark.srcset = `img/${SHOTS[i][0]}_dark.png`; shot.src = `img/${SHOTS[i][0]}.png`; shot.alt = SHOTS[i][3]; }
-tabs.addEventListener("click", e => { const b = e.target.closest(".tab"); if (b) showShot(+b.dataset.i); });
+const SHOTS = [["shanghai_bottle","Shanghai · plastic bottle"],["hongkong_bottle","Hong Kong · same item"],["autocomplete","Typing 膠"],["material_only","Typing “plastic”"]];
+const nav = $("#shotnav"), shot = $("#shot");
+nav.innerHTML = SHOTS.map((s, i) => `<button class="sn" role="tab" data-i="${i}" aria-selected="false"><span class="n">0${i+1}</span>${esc(s[1])}</button>`).join("");
+function showShot(i){ nav.querySelectorAll(".sn").forEach(b => b.setAttribute("aria-selected", b.dataset.i == i)); shot.src = `img/${SHOTS[i][0]}_dark.png`; shot.alt = `Screenshot of the real app: ${SHOTS[i][1]}`; }
+nav.addEventListener("click", e => { const b = e.target.closest(".sn"); if (b) showShot(+b.dataset.i); });
+SHOTS.forEach(s => { const im = new Image(); im.src = `img/${s[0]}_dark.png`; });
 showShot(0);
 
-/* ---------- result strips ---------- */
+/* ---------- strips ---------- */
 document.querySelectorAll(".strip .row").forEach(el => { const k = +el.dataset.k; el.innerHTML = Array.from({ length: 20 }, (_, i) => `<i${i < k ? "" : ' class="x"'}></i>`).join(""); });
 })();
 </script>
