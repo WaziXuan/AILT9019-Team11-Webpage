@@ -319,8 +319,8 @@ footer{margin-top:56px;padding:22px 0 40px;border-top:1px solid var(--line);font
   <div class="viewer">
     <div class="steps" role="tablist" id="steps"></div>
     <div>
-      <div class="frame"><div class="bar"><i></i><i></i><i></i><code>localhost:8000 · --offline</code></div><img id="shot" alt=""></div>
-      <p class="proof">Unedited screenshots of the real app, 18 Nov 2026, no API key.</p>
+      <div class="frame"><div class="bar"><i></i><i></i><i></i><code>localhost:8000 · --offline</code></div><picture><source id="shotDark" media="(prefers-color-scheme: dark)"><img id="shot" alt=""></picture></div>
+      <p class="proof">Screenshots of the real app at 3× resolution, 19 Nov 2026, no API key. The dark version uses Chrome's automatic dark mode.</p>
     </div>
   </div>
 </section>
@@ -454,16 +454,18 @@ show(0);
 
 /* screenshot steps */
 const SHOTS = [
-  ["img/shanghai_bottle.jpg","Shanghai · plastic bottle","Recyclable, blue bin","Shanghai result for plastic bottle: Recyclable Waste, blue bin, with preparation and source"],
-  ["img/hongkong_bottle.jpg","Hong Kong · same input","Plastic, brown bin","Hong Kong result for plastic bottle: plastic recycling, brown bin, with caveat and EPD FAQ Q6 source"],
-  ["img/autocomplete.jpg","Type 膠","Bilingual suggestions","Typing 膠 lists six bilingual item suggestions"],
-  ["img/material_only.jpg","Type \"plastic\"","Asks for the item","Input plastic returns a follow-up question instead of a category"]
+  ["shanghai_bottle","Shanghai · plastic bottle","Recyclable, blue bin","Shanghai result for plastic bottle: Recyclable Waste, blue bin, with preparation and source"],
+  ["hongkong_bottle","Hong Kong · same input","Plastic, brown bin","Hong Kong result for plastic bottle: plastic recycling, brown bin, with caveat and EPD FAQ Q6 source"],
+  ["autocomplete","Type 膠","Bilingual suggestions","Typing 膠 lists six bilingual item suggestions"],
+  ["material_only","Type \"plastic\"","Asks for the item","Input plastic returns a follow-up question instead of a category"]
 ];
-const steps = $("#steps"), shot = $("#shot");
+const steps = $("#steps"), shot = $("#shot"), shotDark = $("#shotDark");
+const dark = matchMedia("(prefers-color-scheme: dark)");
 steps.innerHTML = SHOTS.map((s,i)=>`<button class="stepbtn" role="tab" data-i="${i}" aria-selected="false"><span class="k">${i+1}</span><span>${esc(s[1])}<em>${esc(s[2])}</em></span></button>`).join("");
-function step(i){ steps.querySelectorAll(".stepbtn").forEach(b=>b.setAttribute("aria-selected", b.dataset.i==i)); shot.src=SHOTS[i][0]; shot.alt=SHOTS[i][3]; }
+function step(i){ steps.querySelectorAll(".stepbtn").forEach(b=>b.setAttribute("aria-selected", b.dataset.i==i));
+  shotDark.srcset = `img/${SHOTS[i][0]}_dark.png`; shot.src = `img/${SHOTS[i][0]}.png`; shot.alt = SHOTS[i][3]; }
 steps.addEventListener("click", e=>{ const b=e.target.closest(".stepbtn"); if(b) step(+b.dataset.i); });
-SHOTS.forEach(s=>{ const im=new Image(); im.src=s[0]; });
+SHOTS.forEach(s=>{ const im=new Image(); im.src=`img/${s[0]}${dark.matches?"_dark":""}.png`; });
 step(0);
 
 /* result glyphs */
